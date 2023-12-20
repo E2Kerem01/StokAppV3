@@ -24,6 +24,7 @@ class Store(models.Model):
 
 
 class QuickAdd(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=120, unique=True)
     stock = models.PositiveIntegerField()
     maaliyet = models.PositiveIntegerField()

@@ -14,7 +14,7 @@
                                     <form method="POST" novalidate="novalidate" action="{% url 'quickadd' %}">
                                         {% csrf_token %}
                                         <div class="form-group" >
-                                            <label for="name" class="control-label mb-1">Ürün adı:</label>
+                                            <label for="name" class="control-label mb-1" >Ürün adı:</label>
                                             <div class="invalid-feedback">Product Name Can't Be Empty</div>
                                             {{ form.name }}
                                         </div>
