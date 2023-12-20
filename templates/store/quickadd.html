@@ -1,0 +1,93 @@
+{% load static %} 
+<section>
+
+            <div class="row" >
+               <div class="col-lg-4 col-md-auto"> <!-- Sağa kaydırma için ml-auto eklendi -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-title text-center mt-3">
+                                    <h3>Hızlı Ürün Ekle</h3>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <form method="POST" novalidate="novalidate" action="{% url 'quickadd' %}">
+                                        {% csrf_token %}
+                                        <div class="form-group" >
+                                            <label for="name" class="control-label mb-1">Ürün adı:</label>
+                                            <div class="invalid-feedback">Product Name Can't Be Empty</div>
+                                            {{ form.name }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="stock" class="control-label mb-1">Stok Miktarı:</label>
+                                            <div class="invalid-feedback">Product ID Can't Be Empty</div>
+                                            {{ form.stock }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="maaliyet" class="control-label mb-1">Maaliyet:</label>
+                                            <div class="invalid-feedback">Product Price Can't Be Empty</div>
+                                             {{ form.maaliyet }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="satisFiyati" class="control-label mb-1">Satış Fiyatı:</label>
+                                            <div class="invalid-feedback">Product Price Can't Be Empty</div>
+                                             {{ form.satisFiyati }}
+                                        </div>
+                                        
+{#                                        <div class="form-group">#}
+{#                                            <label for="productprice">Birimi:</label>#}
+{#                                            <input type="text" class="form-control" id="productprice"#}
+{#                                                placeholder="Enter Product Price">#}
+{#                                            {{ form.Meta.currency }}#}
+{#                                            <div class="invalid-feedback">Product Price Can't Be Empty</div>#}
+{##}
+{#                                        </div>#}
+{#                                        <div class="form-group">#}
+{#                                            <label for="productprice">Ürün Grubu:</label>#}
+{#                                            <input type="text" class="form-control" id="productprice"#}
+{#                                                placeholder="Enter Product Price">#}
+{#                                            {{ form.Meta.category }}#}
+{#                                            <div class="invalid-feedback">Product Price Can't Be Empty</div>#}
+{##}
+{#                                        </div>#}
+{#                                        <div class="form-group">#}
+{#                                            <label for="p">Hızlı Satış:</label>#}
+{#                                            <input type="text" class="form-control" id="productprice"#}
+{#                                                placeholder="Enter Product Price">#}
+{#                                            {{ form.satisFiyati }}#}
+{#                                            <div class="invalid-feedback">Product Price Can't Be Empty</div>#}
+{##}
+{#                                        </div>#}
+                                        
+                                        <div class="form-group">
+                                            <label for="kdvOrani" class="control-label mb-1">Kdv Oranı:</label>
+                                            <div class="invalid-feedback">Product Price Can't Be Empty</div>
+                                            {{ form.kdvOrani }}
+                                        </div>
+{#                                        {% if form.errors %}#}
+{#                                            <div class="alert alert-danger">#}
+{#                                                <strong>Hata!</strong> Lütfen formu kontrol edin:#}
+{#                                                <ul>#}
+{#                                                    {% for field, errors in form.errors.items %}#}
+{#                                                        <li>{{ field }}: {{ errors }}</li>#}
+{#                                                    {% endfor %}#}
+{#                                                </ul>#}
+{#                                            </div>#}
+{#                                        {% endif %}#}
+                                        <div>
+                                            <button class="btn btn-dark mt-5 mx-auto d-block" type="submit">Ekle </button>
+                                        </div>
+                                        
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+ </section>
+

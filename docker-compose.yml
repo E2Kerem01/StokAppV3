@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+
+#  postgres:
+#     image: postgres:latest
+#     env_file:
+#       - djangoProject/docker.env
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - "postgresql-data:/var/lib/postgresql/data"
+#     command: -p 5432
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    depends_on:
+#      - postgres
+    env_file:
+      - djangoProject/docker.env
+    volumes:
+      - .:/srv/app
+
+    ports:
+      - "0.0.0.0:8000:8000"
+
+    command: python manage.py runserver 0.0.0.0:8000
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python core/tests.py
+
+
+
+
+volumes:
+#  postgresql-data:
+  static-data:
+
+

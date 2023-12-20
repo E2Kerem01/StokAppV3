@@ -1,0 +1,50 @@
+{% extends 'base/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Stok App">
+    <meta http-equiv="X-UA-Compatible" content="ie-edge">
+    <link rel="stylesheet" href="https://bootswatch.com/5/spacelab/bootstrap.min.css">
+    <title>Stok App</title>
+    
+    <!-- Widgets  -->
+</head>
+
+
+{% block content %}  
+    {% csrf_token %}
+    <div class="row">
+            <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="card-body ">
+                    <div class="stat-widget-five">
+                        <div class="stat-icon dib flat-color-4">
+                            <i class="fa fa-cart-plus"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="text-left dib">
+                                <div class="stat-text"><span class="count">{{ product }}</span></div>
+                                <div class="stat-heading">Kayıtlı Ürün</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+    </div>
+    
+   <div class="content">
+            {% include 'store/quickadd.html' %}
+   </div>
+    <div class="content">
+            {% include 'store/create_product.html' %}
+   </div>
+
+
+{% endblock content %}
+
+
+</html>  
