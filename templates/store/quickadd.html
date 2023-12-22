@@ -1,5 +1,3 @@
-{% load static %} 
-<section>
 
             <div class="row" >
                <div class="col-lg-4 col-md-auto"> <!-- Sağa kaydırma için ml-auto eklendi -->
@@ -15,12 +13,14 @@
                                         {% csrf_token %}
                                         <div class="form-group" >
                                             <label for="name" class="control-label mb-1" >Ürün adı:</label>
+                                            <input type="text" class="form-control" id="name">
                                             <div class="invalid-feedback">Product Name Can't Be Empty</div>
                                             {{ form.name }}
                                         </div>
                                         
                                         <div class="form-group">
                                             <label for="stock" class="control-label mb-1">Stok Miktarı:</label>
+                                            <input type="text" class="form-control" id="stock">
                                             <div class="invalid-feedback">Product ID Can't Be Empty</div>
                                             {{ form.stock }}
                                         </div>
@@ -28,12 +28,14 @@
                                         <div class="form-group">
                                             <label for="maaliyet" class="control-label mb-1">Maaliyet:</label>
                                             <div class="invalid-feedback">Product Price Can't Be Empty</div>
+                                            <input type="text" class="form-control" id="maaliyet">
                                              {{ form.maaliyet }}
                                         </div>
                                         
                                         <div class="form-group">
                                             <label for="satisFiyati" class="control-label mb-1">Satış Fiyatı:</label>
                                             <div class="invalid-feedback">Product Price Can't Be Empty</div>
+                                            <input type="text" class="form-control" id="satisFiyati">
                                              {{ form.satisFiyati }}
                                         </div>
                                         
@@ -64,6 +66,7 @@
                                         
                                         <div class="form-group">
                                             <label for="kdvOrani" class="control-label mb-1">Kdv Oranı:</label>
+                                            <input type="text" class="form-control" id="kdvOrani">
                                             <div class="invalid-feedback">Product Price Can't Be Empty</div>
                                             {{ form.kdvOrani }}
                                         </div>
@@ -82,12 +85,11 @@
                                         </div>
                                         
                                     </form>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
- </section>
 

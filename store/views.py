@@ -28,12 +28,12 @@ def quickadd(request):
             product = form.save(commit=False)
             product.user = request.user  # Oluşturan kullanıcıyı atama
             product.save()
-            return render(request, 'dashboard.html', {'form': QuickAddForm()})
+            return redirect('dashboard')
     else:
         form = QuickAddForm()
 
     context = {'form': form}
-    return render(request, 'dashboard.html', context)
+    return render(request, 'store/quickadd.html', context)
 
 
 def create_product(request):
