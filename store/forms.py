@@ -10,7 +10,7 @@ from .models import QuickAdd, Product
 class QuickAddForm(forms.ModelForm):
     class Meta:
         model = QuickAdd
-        fields = ('name', 'stock', 'maaliyet', 'satisFiyati', 'kdvOrani')
+        fields = ('name', 'stock', 'maaliyet', 'satisFiyati', 'kdvOrani', 'currency', 'category')
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control', 'id': 'name'
@@ -26,6 +26,13 @@ class QuickAddForm(forms.ModelForm):
             }),
             'kdvOrani': forms.NumberInput(attrs={
                 'class': 'form-control', 'id': 'kdvOrani'
+            }),
+            'currency': forms.Select(attrs={
+                'class': 'form-control', 'id': 'currency'
+            })
+            ,
+            'category': forms.Select(attrs={
+                'class': 'form-control', 'id': 'category'
             })
         }
         # CURRENCY_CHOICES = [

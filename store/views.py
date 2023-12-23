@@ -4,6 +4,8 @@ import string
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse, redirect
 from .forms import QuickAddForm, ProductForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 # Create your views here.
 
@@ -20,6 +22,21 @@ from .forms import QuickAddForm, ProductForm
     return render(request, 'index.html', {'form': form})"""
 
 
+# @login_required(login_url='login')
+# def quickadd(request):
+#     if request.method == 'POST':
+#         form = QuickAddForm(request.POST)
+#         if form.is_valid():
+#             product = form.save(commit=False)
+#             product.user = request.user  # Oluşturan kullanıcıyı atama
+#             product.save()
+#             return render(request, 'dashboard.html', {'form': QuickAddForm()})
+#     else:
+#         form = QuickAddForm()
+#
+#     context = {'form': form}
+#     return render(request, 'dashboard.html', context)
+
 @login_required(login_url='login')
 def quickadd(request):
     if request.method == 'POST':
@@ -28,12 +45,12 @@ def quickadd(request):
             product = form.save(commit=False)
             product.user = request.user  # Oluşturan kullanıcıyı atama
             product.save()
-            return redirect('dashboard')
+            return redirect('dashboard')  # Dashboard'a geri dön
     else:
         form = QuickAddForm()
 
     context = {'form': form}
-    return render(request, 'store/quickadd.html', context)
+    return render(request, 'quickadd.html', context)
 
 
 def create_product(request):

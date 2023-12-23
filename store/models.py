@@ -23,6 +23,13 @@ class Store(models.Model):
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2) """
 
 
+class Categories(models.Model):
+    name = models.CharField(max_length=120)
+
+    def __str__(self):
+        return self.name
+
+
 class QuickAdd(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=120, unique=True)
@@ -30,6 +37,13 @@ class QuickAdd(models.Model):
     maaliyet = models.PositiveIntegerField()
     satisFiyati = models.PositiveIntegerField()
     kdvOrani = models.PositiveIntegerField()
+    category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True, blank=True)
+    currency_choices = [
+        ('TRY', 'TRY'),
+        ('USD', 'USD'),
+        ('EUR', 'EUR'),
+    ]
+    currency = models.CharField(max_length=3, choices=currency_choices, default='USD')
 
     def __str__(self):
         return self.name
@@ -39,6 +53,13 @@ class Product(models.Model):
     name = models.CharField(max_length=120, unique=True)
     sortno = models.PositiveIntegerField()
     created_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=120)
 
     def __str__(self):
         return self.name
