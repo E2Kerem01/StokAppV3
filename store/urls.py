@@ -1,8 +1,11 @@
+
+
 from django.urls import path
-from .views import quickadd, create_product, productmanagement
+from .views import  create_product, productmanagement, category
 
 urlpatterns = [
-    path('quickadd/', quickadd, name='quickadd'),
+
     path('createproduct/', create_product, name='createproduct'),
     path('productmanagement/', productmanagement, name='productmanagement'),
+    path('category/', category, name='category'),
 ]

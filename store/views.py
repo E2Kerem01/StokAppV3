@@ -3,7 +3,7 @@ import string
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse, redirect
-from .forms import QuickAddForm, ProductForm
+from .forms import QuickAddForm, ProductForm, CategoryForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Product, QuickAdd
@@ -38,20 +38,20 @@ from .models import Product, QuickAdd
 #     context = {'form': form}
 #     return render(request, 'dashboard.html', context)
 
-@login_required(login_url='sistem')
-def quickadd(request):
-    if request.method == 'POST':
-        form = QuickAddForm(request.POST)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.user = request.user  # Oluşturan kullanıcıyı atama
-            product.save()
-            return redirect('dashboard')  # Dashboard'a geri dön
-    else:
-        form = QuickAddForm()
-
-    context = {'form': form}
-    return render(request, 'quickadd.html', context)
+# @login_required(login_url='sistem')
+# def quickadd(request):
+#     if request.method == 'POST':
+#         form = QuickAddForm(request.POST)
+#         if form.is_valid():
+#             product = form.save(commit=False)
+#             product.user = request.user  # Oluşturan kullanıcıyı atama
+#             product.save()
+#             return redirect('dashboard')  # Dashboard'a geri dön
+#     else:
+#         form = QuickAddForm()
+#
+#     context = {'form': form}
+#     return render(request, 'dashboard.html', context)
 
 
 def create_product(request):
@@ -91,3 +91,18 @@ def productmanagement(request):
         form = ProductForm()
 
     return render(request, 'store/productmanagement.html', {'products': user_products, 'form': form})
+
+@login_required(login_url='sistem')
+def category(request):
+        forms = CategoryForm()
+        if request.method == 'POST':
+            forms = CategoryForm(request.POST)
+            if forms.is_valid():
+                category = forms.save(commit=False)
+                category.user = request.user
+                category.save()
+                return redirect('category')
+        context = {
+            'form': forms
+        }
+        return render(request, 'store/category.html', context)

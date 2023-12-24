@@ -8,7 +8,7 @@
                 <!-- Credit Card -->
                 <div id="pay-invoice">
                     <div class="card-body">
-                                    <form method="POST" novalidate="novalidate" action="{% url 'quickadd' %}">
+                                    <form method="POST" novalidate="novalidate" action="#">
                                         {% csrf_token %}
                                         <div class="form-group" >
                                             <label for="name" class="control-label mb-1" >Ürün adı:</label>
@@ -84,8 +84,27 @@
                                         <div>
                                             <button class="btn btn-primary  mt-5 mx-auto d-block btn-lg"  type="submit">Kaydet </button>
                                         </div>
-                                        
+                                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                        <script>
+                                            $(document).ready(function () {
+                                                $("form").submit(function (event) {
+                                                    let isEmpty = false;
+                                                    $("input, select").each(function () {
+                                                        if ($(this).val().trim() === "") {
+                                                            isEmpty = true;
+                                                            return false; // Boş bir alan bulundu, döngüyü durdur
+                                                        }
+                                                    });
+
+                                                    if (isEmpty) {
+                                                        event.preventDefault(); // Formun gönderimini engelle
+                                                        alert("Lütfen tüm alanları doldurun."); // Uyarı mesajı göster
+                                                    }
+                                                });
+                                            });
+                                        </script>
                                     </form>
+
                     </div>
                 </div>
 

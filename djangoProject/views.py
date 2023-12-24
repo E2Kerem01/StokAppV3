@@ -35,6 +35,33 @@ from store.models import QuickAdd
 #     return render(request, 'dashboard.html', {'form': form, 'product_count': product_count, 'total_expense': total_expense})
 
 
+# @login_required(login_url='sistem')
+# def dashboard(request):
+#     form = QuickAddForm()
+#     user_products = QuickAdd.objects.filter(user=request.user)
+#     product_count = user_products.count()
+#     total_cost = user_products.annotate(total=Sum(F('maaliyet') * F('stock'))) \
+#                      .aggregate(total_cost=Sum('total'))['total_cost'] or 0
+#
+#     total_price = user_products.annotate(total1=Sum(F('satisFiyati') * F('stock'))) \
+#                      .aggregate(total_price=Sum('total1'))['total_price'] or 0
+#
+#     if request.method == 'POST':
+#         form = QuickAddForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             user_products = QuickAdd.objects.filter(user=request.user)
+#             product_count = user_products.count()
+#             total_cost = user_products.annotate(total=Sum(F('maaliyet') * F('stock'))) \
+#                              .aggregate(total_cost=Sum('total'))['total_cost'] or 0
+#
+#             total_price = user_products.annotate(total=Sum(F('satisFiyati') * F('stock'))) \
+#                               .aggregate(total_cost=Sum('total'))['total_price'] or 0
+#
+#     return render(request, 'dashboard.html',
+#                   {'form': form, 'product_count': product_count, 'total_cost': total_cost, 'total_price': total_price})
+
+
 @login_required(login_url='sistem')
 def dashboard(request):
     form = QuickAddForm()
@@ -43,13 +70,23 @@ def dashboard(request):
     total_cost = user_products.annotate(total=Sum(F('maaliyet') * F('stock'))) \
                      .aggregate(total_cost=Sum('total'))['total_cost'] or 0
 
+    total_price = user_products.annotate(totalv1=Sum(F('satisFiyati') * F('stock'))) \
+                      .aggregate(total_price=Sum('totalv1'))['total_price'] or 0
+
     if request.method == 'POST':
         form = QuickAddForm(request.POST)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
+
             user_products = QuickAdd.objects.filter(user=request.user)
             product_count = user_products.count()
             total_cost = user_products.annotate(total=Sum(F('maaliyet') * F('stock'))) \
                              .aggregate(total_cost=Sum('total'))['total_cost'] or 0
+
+            total_price = user_products.annotate(totalv1=Sum(F('satisFiyati') * F('stock'))) \
+                              .aggregate(total_price=Sum('totalv1'))['total_price'] or 0
+
     return render(request, 'dashboard.html',
-                  {'form': form, 'product_count': product_count, 'total_cost': total_cost})
+                  {'form': form, 'product_count': product_count, 'total_cost': total_cost, 'total_price': total_price})
