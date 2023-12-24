@@ -1,0 +1,66 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Create Product{% endblock title %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Product</a></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<h1>Kullanıcı Ürün Yönetimi</h1>
+
+    <!-- Ürün Ekleme Formu -->
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Ürün Ekle</button>
+    </form>
+
+    <!-- Ürün Listesi -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th scope="col">Ürün Adı</th>
+                <th>Stok Miktarı</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.stock }}</td>
+                <td>
+{#                    <a href="{% url 'delete_product' product.id %}">Sil</a>#}
+{#                    <a href="{% url 'edit_product' product.id %}">Düzenle</a>#}
+                    <!-- Düzenleme veya Stok Miktarı Değiştirme Formları -->
+                    <!-- Bu formlar JavaScript veya ayrı view fonksiyonları kullanılarak yapılabilir -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

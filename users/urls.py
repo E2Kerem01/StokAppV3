@@ -7,6 +7,6 @@ urlpatterns = [
     path('logout/', logout_page, name='logout'),
     path('contact/', contact_page, name='contact'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('logout/', logout_page, name = 'logout'),
+
 
 ]

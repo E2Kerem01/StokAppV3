@@ -55,3 +55,4 @@ def contact_page(request):
         return HttpResponseRedirect('/success/')  # Başarılı sayfası
 
     return render(request, 'users/contact.html')
+

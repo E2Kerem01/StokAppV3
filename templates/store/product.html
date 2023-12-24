@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Create Product{% endblock title %}
+
+{% block breadcrumbs %}
+<!-- ... -->
+{% endblock breadcrumbs %}
+
+{% block content %}
+<h1>Kullanıcı Ürün Yönetimi</h1>
+
+<!-- Ürün Ekleme Formu -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Ürün Ekle</button>
+</form>
+
+{% include 'product_list.html' with products=products %}
+{% endblock content %}

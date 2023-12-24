@@ -6,6 +6,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from .forms import QuickAddForm, ProductForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from .models import Product, QuickAdd
 
 # Create your views here.
 
@@ -37,7 +38,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 #     context = {'form': form}
 #     return render(request, 'dashboard.html', context)
 
-@login_required(login_url='login')
+@login_required(login_url='sistem')
 def quickadd(request):
     if request.method == 'POST':
         form = QuickAddForm(request.POST)
@@ -66,3 +67,27 @@ def create_product(request):
 
     context = {'form': form}
     return render(request, 'store/create_product.html', context)
+
+
+@login_required(login_url='sistem')
+def productmanagement(request):
+    # Kullanıcıya ait ürünleri sıralamak için
+    user_products = QuickAdd.objects.filter(user=request.user).order_by('-created_day')
+
+    # Eğer bir arama yapılıyorsa
+    query = request.GET.get('q')
+    if query:
+        user_products = user_products.filter(name__icontains=query)
+
+    # Eğer bir ürün eklemesi yapılıyorsa
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
+            return redirect('product_list')  # Ürün eklendikten sonra tekrar listeye yönlendir
+    else:
+        form = ProductForm()
+
+    return render(request, 'store/productmanagement.html', {'products': user_products, 'form': form})

@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
+
 
 
 # Create your models here.
@@ -44,6 +46,7 @@ class QuickAdd(models.Model):
         ('EUR', 'EUR'),
     ]
     currency = models.CharField(max_length=3, choices=currency_choices, default='USD')
+    created_day = models.DateTimeField(default=timezone.now)  # Burada created_day ekleniyor.
 
     def __str__(self):
         return self.name
@@ -63,3 +66,13 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Sales(models.Model):
+    product = models.ForeignKey('QuickAdd', on_delete=models.CASCADE)
+    quantity_sold = models.PositiveIntegerField()
+    sold_to = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_sold = models.DateTimeField(auto_now_add=True)
+
+    def total_profit_margin(self):
+        return (self.product.satisFiyati - self.product.maaliyet) * self.quantity_sold
