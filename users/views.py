@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -30,9 +31,10 @@ def login_page(request):
     return render(request, 'users/sistem.html', context)
 
 
+@login_required(login_url='sistem')
 def logout_page(request):
     logout(request)
-    return redirect('sistem')
+    return redirect('logout')
 
 
 def contact_page(request):
@@ -55,4 +57,3 @@ def contact_page(request):
         return HttpResponseRedirect('/success/')  # Başarılı sayfası
 
     return render(request, 'users/contact.html')
-

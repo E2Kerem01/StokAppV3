@@ -86,30 +86,41 @@
                                         </div>
                                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                                         <script>
-                                            $(document).ready(function () {
+                                           $(document).ready(function () {
                                                 $("form").submit(function (event) {
                                                     let isEmpty = false;
-                                                    $("input, select").each(function () {
-                                                        if ($(this).val().trim() === "") {
+                                                    let emptyFields = [];
+
+                                                    // İlgili alanların kontrolü ve özel uyarı mesajlarının belirlenmesi
+                                                    let fieldChecks = {
+                                                        'name': 'Ürün Adı',
+                                                        'stock': 'Stok Miktarı',
+                                                        'maaliyet': 'Maliyet',
+                                                        'satisFiyati': 'Satış Fiyatı',
+                                                        'category': 'Kategori'
+                                                    };
+
+                                                    for (let fieldName in fieldChecks) {
+                                                        let fieldValue = $('[name="' + fieldName + '"]').val().trim();
+                                                        if (fieldValue === "") {
                                                             isEmpty = true;
-                                                            return false; // Boş bir alan bulundu, döngüyü durdur
+                                                            emptyFields.push(fieldChecks[fieldName]);
                                                         }
-                                                    });
+                                                    }
 
                                                     if (isEmpty) {
-                                                        event.preventDefault(); // Formun gönderimini engelle
-                                                        alert("Lütfen tüm alanları doldurun."); // Uyarı mesajı göster
+                                                        event.preventDefault();
+                                                        let emptyFieldsString = emptyFields.join(', ');
+                                                        alert("Lütfen " + emptyFieldsString + " alanlarını doldurun.");
                                                     }
                                                 });
-                                            });
+                                           });
+
                                         </script>
                                     </form>
-
                     </div>
                 </div>
-
             </div>
         </div> <!-- .card -->
-
     </div><!--/.col-->
 </div>

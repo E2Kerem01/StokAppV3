@@ -76,6 +76,14 @@ def dashboard(request):
     if request.method == 'POST':
         form = QuickAddForm(request.POST)
         if form.is_valid():
+            product_name = form.cleaned_data['name']
+            existing_product = QuickAdd.objects.filter(user=request.user, name=product_name).first()
+
+            if existing_product:  # Eğer ürün zaten varsa, güncelle
+                form = QuickAddForm(request.POST, instance=existing_product)
+            else:  # Yoksa, yeni ürün oluştur
+                form = QuickAddForm(request.POST)
+
             product = form.save(commit=False)
             product.user = request.user
             product.save()
