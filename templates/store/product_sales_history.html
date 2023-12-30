@@ -1,0 +1,27 @@
+<!-- product_sales_history.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ product.name }} İçin Satış Geçmişi</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tarih</th>
+        <th>Satılan Miktar</th>
+        <th>Toplam Kar Marjı</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sale in product.sales.all %}
+        <tr>
+          <td>{{ sale.date_sold }}</td>
+          <td>{{ sale.quantity_sold }}</td>
+          <td>{{ sale.total_profit_margin }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{% url 'sales_history' %}">Satış Geçmişine Geri Dön</a>
+{% endblock %}

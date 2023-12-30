@@ -27,7 +27,6 @@
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="chartist" level="application" />
     <orderEntry type="library" name="weathericons" level="application" />
-    <orderEntry type="library" name="jquery-3.6.0" level="application" />
     <orderEntry type="library" name="jqvmap" level="application" />
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="bootstrap" level="application" />
@@ -48,6 +47,7 @@
     <orderEntry type="library" name="weathericons" level="application" />
     <orderEntry type="library" name="jqvmap" level="application" />
     <orderEntry type="library" name="fullcalendar" level="application" />
+    <orderEntry type="library" name="bootstrap" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

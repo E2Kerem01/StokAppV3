@@ -1,0 +1,114 @@
+{% extends 'base/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ salesperson.name }} - Detaylar</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        main {
+            background-color: #fff;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+
+        .action-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .action-links a {
+            display: inline-block;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .action-links a.delete {
+            color: white;
+            background-color: #e74c3c; /* Kırmızı */
+            border: 1px solid #c0392b;
+        }
+
+        .action-links a.update {
+            color: white;
+            background-color: #3498db; /* Mavi */
+            border: 1px solid #2980b9;
+        }
+
+        .action-links a.list {
+            color: white;
+            background-color: #27ae60; /* Yeşil */
+            border: 1px solid #229954;
+        }
+
+        .action-links a:hover {
+            background-color: #2c3e50; /* Tüm bağlantılarda geçiş efekti için ortak renk */
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>{{ salesperson.name }} - Detaylar</h1>
+        <p><strong>İsim:</strong> {{ salesperson.name }}</p>
+        <p><strong>Telefon Numarası:</strong> {{ salesperson.phone_number }}</p>
+        <p><strong>Borç:</strong> {{ salesperson.debt }}</p>
+        <p><strong>Mal Fiyatı:</strong> {{ salesperson.item_price }}</p>
+      
+        <div class="action-links">
+            <!-- Silme Linki -->
+            <a href="{% url 'delete_salesperson' pk=salesperson.pk %}" class="delete">Sil</a>
+        
+            <!-- Güncelleme Linki -->
+            <a href="{% url 'update_salesperson' pk=salesperson.pk %}" class="update">Güncelle</a>
+        
+            <a href="{% url 'salesperson_list' %}" class="list">Satış Yapan Kişiler Listesi</a>
+        </div>
+    </main>
+</body>
+</html>
+
+
+{% endblock content %}

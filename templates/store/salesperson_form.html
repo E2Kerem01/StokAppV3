@@ -1,0 +1,93 @@
+{% extends 'base/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Satış Yapan Kişi Ekle</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        header {
+            background-color: #057cf3;
+            color: #ecf0f1;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #3c2c50;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #0d72d7;
+            color: #ecf0f1;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #ecf0f1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            display: block;
+            margin-top: 10px;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Yeni Satış Yapan Kişi Ekle</h1>
+    </header>
+
+    <form method="post" action="{% url 'create_salesperson' %}">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <button type="submit">Kaydet</button>
+    </form>
+
+    <a href="{% url 'salesperson_list' %}">Satış Yapan Kişiler Listesi</a>
+
+</body>
+</html>
+
+{% endblock content %}

@@ -1,0 +1,157 @@
+{% extends 'base/base.html' %}
+{% block content %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satış Yapan Kişiler</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        header {
+            background-color: #0c76e0;
+            color: #ecf0f1;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #ecf0f1;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+
+        .add-salesperson {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: #ecf0f1;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .add-salesperson:hover {
+            background-color: #219d54;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Satış Yapan Kişiler</h1>
+    </header>
+
+    <style>
+        ul {
+            margin-bottom: 20px; /* Tablo ile ul arasında 20px boşluk bırakır */
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px; /* Satırlar arasında 10px boşluk bırakır */
+        }
+    
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    
+    <ul>
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+        
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+        
+            th:last-child,
+            td:last-child {
+                text-align: center;
+            }
+        
+            a.edit-button {
+                display: inline-block;
+                padding: 8px 16px;
+                text-decoration: none;
+                border-radius: 5px;
+                background-color: #27ae60; /* Yeşil */
+                color: white;
+                transition: background-color 0.3s;
+            }
+        
+            a.edit-button:hover {
+                background-color: #229954; /* Hover rengi */
+            }
+        </style>
+        
+        <table>
+            <tr>
+                <th>İsim</th>
+                <th>Telefon</th>
+                <th>Borç</th>
+                <th></th>
+            </tr>
+            {% for salesperson in salespeople %}
+                <tr>
+                    <td>{{ salesperson.name }}</td>
+                    <td>{{ salesperson.phone_number }}</td>
+                    <td>{{ salesperson.debt }}</td>
+                    <td><a href="{% url 'salesperson_detail' pk=salesperson.pk %}" class="edit-button">Edit</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        
+    </ul>
+    
+
+    <a class="add-salesperson" href="{% url 'create_salesperson' %}">Yeni Satış Yapan Kişi Ekle</a>
+    
+</body>
+</html>
+
+
+{% endblock content %}

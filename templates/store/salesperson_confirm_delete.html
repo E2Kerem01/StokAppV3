@@ -1,0 +1,10 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<h1>Satış Yapan Kişiyi Sil</h1>
+<p>Gerçekten silmek istiyor musunuz?</p>
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Evet, Sil">
+</form>
+<a href="{% url 'salesperson_list' %}">İptal</a>
+{% endblock content %}

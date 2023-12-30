@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 
 
@@ -62,11 +64,40 @@ class Product(models.Model):
         return self.name
 
 
+# MEHMET KOD
+
 class Sales(models.Model):
     product = models.ForeignKey('QuickAdd', on_delete=models.CASCADE)
     quantity_sold = models.PositiveIntegerField()
     sold_to = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_sold = models.DateTimeField(auto_now_add=True)
+    date_sold = models.DateTimeField(default=timezone.now)
 
     def total_profit_margin(self):
         return (self.product.satisFiyati - self.product.maaliyet) * self.quantity_sold
+
+
+class SalesPerson(models.Model):
+    name = models.CharField(max_length=100, verbose_name='İsim', unique=True)
+    phone_number = models.CharField(max_length=15, verbose_name='Telefon Numarası', unique=True)
+    debt = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Borç')
+    item_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Mal Fiyatı')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Satış Yapan Kişiler'
+
+
+# silme yeriii
+
+@receiver(post_save, sender=QuickAdd)
+def delete_quickadd(sender, instance, **kwargs):
+    if instance.stock == 0:
+        try:
+            with transaction.atomic():
+                instance.delete()
+        except QuickAdd.DoesNotExist:
+            pass
+        except Exception as e:
+            print(f'Hata oluştu: {e}')
