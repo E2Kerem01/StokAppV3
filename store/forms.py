@@ -11,13 +11,14 @@ class SalesPersonForm(forms.ModelForm):
 class QuickAddForm(forms.ModelForm):
     class Meta:
         model = QuickAdd
-        fields = ('name', 'stock', 'maaliyet', 'satisFiyati', 'kdvOrani', 'currency', 'category')
+        fields = ('name', 'stock', 'maaliyet', 'satisFiyati', 'kdvOrani', 'currency', 'category', 'barkodNo')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'id': 'name'}),
             'stock': forms.NumberInput(attrs={'class': 'form-control', 'id': 'stock'}),
             'maaliyet': forms.NumberInput(attrs={'class': 'form-control', 'id': 'maaliyet'}),
             'satisFiyati': forms.NumberInput(attrs={'class': 'form-control', 'id': 'satisFiyati'}),
             'kdvOrani': forms.NumberInput(attrs={'class': 'form-control', 'id': 'kdvOrani'}),
+            'barkodNo': forms.NumberInput(attrs={'class': 'form-control', 'id': 'barkodNo'}),
             'currency': forms.Select(attrs={'class': 'form-control', 'id': 'currency'}),
             'category': forms.Select(attrs={'class': 'form-control', 'id': 'category'}),
         }

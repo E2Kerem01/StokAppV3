@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Store
+from .models import Store, QuickAdd
 
 
 @admin.register(Store)
@@ -13,4 +13,7 @@ class StoreAdmin(admin.ModelAdmin):
 
     class Meta:
         model = Store
-
+#
+# @admin.register(QuickAdd)
+# class QuickAddAdmin(admin.ModelAdmin):
+#

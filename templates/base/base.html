@@ -72,6 +72,28 @@
             /* İstediğiniz diğer stillendirmeler */
         }
 
+
+        #editModal {
+            display: none; /* Modalı başlangıçta gizle */
+            position: fixed; /* Sayfa içinde sabit konumlandırma */
+            top: 50%; /* Sayfanın üst kısmından yüzde olarak 50 oranında aşağıda */
+            left: 50%; /* Sayfanın sol kısmından yüzde olarak 50 oranında sağda */
+            transform: translate(-50%, -50%); /* Yatay ve dikeyde merkezleme için */
+            z-index: 9999; /* Diğer içeriklerin üstünde göstermek için */
+            width: 500px; /* Modal genişliği */
+            background-color: white; /* Arka plan rengi */
+            border: 1px solid #ccc; /* Kenarlık */
+            padding: 20px; /* İçerik iç boşluğu */
+
+
+        }
+        .modal-body {
+        max-height: 400px; /* Modal içeriğinin maksimum yüksekliği */
+        overflow-y: auto; /* Dikey scroll çubuğunu etkinleştirir */
+        }
+
+
+
     </style>
 </head>
 
@@ -326,6 +348,7 @@
             });
             // Bar Chart #flotBarChart End
         });
+
     </script>
 </body>
 

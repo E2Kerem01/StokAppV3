@@ -3,13 +3,15 @@
 from django.urls import path
 from .views import create_product, productmanagement, category, quick_sale, quick_sale_page, sales_history, \
     product_sales_history, salesperson_list, create_salesperson, salesperson_detail, SalesPersonDeleteView, \
-    SalesPersonUpdateView
+    SalesPersonUpdateView, QuickAddUpdate, update_product
 
 urlpatterns = [
 
     path('createproduct/', create_product, name='createproduct'),
     path('productmanagement/', productmanagement, name='productmanagement'),
     path('category/', category, name='category'),
+     #path('products/', product_list, name='product_list'),
+    path('update_product/<int:pk>/', update_product, name='update_product'),
 
     # MEHMET PATH
 
@@ -22,4 +24,5 @@ urlpatterns = [
     path('salesperson/<int:pk>/', salesperson_detail, name='salesperson_detail'),
     path('salesperson/<int:pk>/delete/', SalesPersonDeleteView.as_view(), name='delete_salesperson'),
     path('salesperson/<int:pk>/update/', SalesPersonUpdateView.as_view(), name='update_salesperson'),
+
 ]

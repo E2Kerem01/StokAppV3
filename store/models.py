@@ -42,6 +42,7 @@ class QuickAdd(models.Model):
     maaliyet = models.PositiveIntegerField(null=False)
     satisFiyati = models.PositiveIntegerField(null=False)
     kdvOrani = models.PositiveIntegerField(default=0)
+    barkodNo = models.PositiveIntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     currency_choices = [
         ('TRY', 'TRY'),
