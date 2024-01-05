@@ -1,17 +1,22 @@
 import logging
-import string
-
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from .forms import ProductForm, CategoryForm, SalesPersonForm, QuickAddForm
+import json
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import DeleteView, UpdateView
-from .forms import ProductForm, CategoryForm, SalesPersonForm, QuickAddForm
+from .forms import ProductForm, CategoryForm, SalesPersonForm
 from .models import QuickAdd, SalesPerson, Sales
-import json
+from django.db.models import Case, When, F, Value, Sum, BooleanField, IntegerField
+from datetime import datetime, timedelta
+from django.utils.datetime_safe import date
+from django.http import HttpResponse
+from decimal import Decimal
+from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 logger = logging.getLogger(__name__)
 
@@ -308,10 +313,47 @@ class SalesPersonUpdateView(UpdateView):
     template_name = 'store/salesperson_form.html'
     success_url = reverse_lazy('salesperson_list')
 
+def update_salesperson_(request, pk):
+    salesperson = get_object_or_404(SalesPerson, pk=pk)
+
+    if request.method == 'POST':
+        form = SalesPersonForm(request.POST, instance=salesperson)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('salesperson_detail', args=[pk]))
+    else:
+        form = SalesPersonForm(instance=salesperson)
+
+    return render(request, 'store/salesperson_update.html', {'form': form, 'salesperson': salesperson})
+
+
+from django.db.models import Q
+
 
 def salesperson_list(request):
-    salespeople = SalesPerson.objects.all()
-    return render(request, 'store/salesperson_list.html', {'salespeople': salespeople})
+    query = request.GET.get('q')
+    salespeople_list = SalesPerson.objects.all()
+
+    if query:
+        salespeople_list = salespeople_list.filter(
+            Q(name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(debt__icontains=query)
+        )
+
+    # Number of salespeople to display per page
+    items_per_page = 5
+    paginator = Paginator(salespeople_list, items_per_page)
+
+    page = request.GET.get('page')
+    try:
+        salespeople = paginator.page(page)
+    except PageNotAnInteger:
+        salespeople = paginator.page(1)
+    except EmptyPage:
+        salespeople = paginator.page(paginator.num_pages)
+
+    return render(request, 'store/salesperson_list.html', {'salespeople': salespeople, 'query': query})
 
 
 def create_salesperson(request):
@@ -383,39 +425,52 @@ def quick_sale_page(request):
 
     if request.user.is_authenticated:
         if search_term:
-            # Eğer search_term değeri boş değilse, ürünleri filtrele
             products = QuickAdd.objects.filter(user=request.user, name__icontains=search_term)
         else:
             products = QuickAdd.objects.none()
 
         product_count = products.count()
 
-        if request.method == 'POST':
+        salespeople = SalesPerson.objects.all()
 
+        if request.method == 'POST':
             product_id = request.POST.get('product_id')
             quantity_sold = int(request.POST.get('quantity_sold'))
+            sold_by_id = request.POST.get('sold_by')
+            is_credit = request.POST.get('isCredit') == 'True'
+            print("Is Credit (raw):", request.POST.get('isCredit'))
+            print("Is Credit (boolean):", is_credit)
 
             product = QuickAdd.objects.get(id=product_id)
 
             if product.stock >= quantity_sold:
-
                 product.stock -= quantity_sold
                 product.save()
 
-                # Kar marjını güncelle
+                # QuickAdd nesnesini kaydet
+                product.save()
+
                 profit_margin = calculate_profit_margin(product) * quantity_sold
                 total_profit_margin = update_total_profit_margin(total_profit_margin, profit_margin)
+
+                sold_by = SalesPerson.objects.get(id=sold_by_id)
 
                 sales = Sales.objects.create(
                     product=product,
                     quantity_sold=quantity_sold,
-                    sold_to=request.user  # Satışı yapan kullanıcı
+                    sold_to=request.user,
+                    sold_by=sold_by,
+                    is_credit=is_credit
                 )
 
-            else:
-                messages.error(request, 'yetersiz stok')
+                if sales.is_credit and product.satisFiyati * quantity_sold > 0:
+                    sold_by.debt += product.satisFiyati * quantity_sold
+                    sold_by.save()
 
-        # Satış geçmişini al
+                messages.success(request, 'Satış başarıyla kaydedildi.')
+            else:
+                messages.error(request, 'Yetersiz stok')
+
         sales_history = Sales.objects.filter(product__user=request.user)
 
         return render(request, 'store/sales.html', {
@@ -423,7 +478,54 @@ def quick_sale_page(request):
             'product_count': product_count,
             'search_term': search_term,
             'total_profit_margin': total_profit_margin,
-            'sales_history': sales_history
+            'sales_history': sales_history,
+            'salespeople': salespeople
+        })
+    else:
+        return redirect('login')
+
+
+@login_required(login_url='login')
+def credit_sales_page(request):
+    if request.user.is_authenticated:
+        salespeople = SalesPerson.objects.all()
+
+        # Get start and end dates from user input or default to today's date
+        start_date_str = request.GET.get('start_date', '')
+        end_date_str = request.GET.get('end_date', '')
+
+        today = date.today()
+
+        # Use the consistent 'Y-m-d' format for parsing
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else today
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else today + timedelta(
+            days=1)  # Assume end date is inclusive
+
+        # Bor kutusu bilgisini hesapla
+        bor_kutusu_bilgisi, sales_table, total_profit_for_person = calculate_bor_kutusu(start_date, end_date)
+
+        # Sayfalandırma işlemi
+        items_per_page = 10
+        paginator = Paginator(sales_table, items_per_page)
+
+        page = request.GET.get('page')
+
+        try:
+            sales_table = paginator.page(page)
+        except PageNotAnInteger:
+            sales_table = paginator.page(1)
+        except EmptyPage:
+            sales_table = paginator.page(paginator.num_pages)
+
+        # salesperson.debt = salesperson.total_sales
+        return render(request, 'store/credit_sales.html', {
+            'salespeople': salespeople,
+            'total_profit_for_person': total_profit_for_person,
+            'sales_table': sales_table,
+            'bor_kutusu_bilgisi': bor_kutusu_bilgisi,
+            'start_date': start_date_str if start_date_str else today.strftime('%Y-%m-%d'),
+            'end_date': end_date_str if end_date_str else (today + timedelta(days=1)).strftime('%Y-%m-%d'),
+            # Assume end date is inclusive
         })
     else:
         return redirect('login')
@@ -446,3 +548,108 @@ def quick_sale(request):
             messages.error(request, 'Satış için yeterli stok yok.')
 
     return redirect('dashboard')
+
+
+def calculate_bor_kutusu(start_date, end_date):
+    # Toplam Borcu hesaplama bölümü
+    total_sales = SalesPerson.objects.annotate(
+        total_sales=Sum(
+            Case(
+                # When(sales_by_person__is_credit=True, then=F('sales_by_person__quantity_sold') * (F('sales_by_person__product__satisFiyati') - F('sales_by_person__product__maaliyet'))),
+                When(sales_by_person__is_credit=True,
+                     then=F('sales_by_person__quantity_sold') * F('sales_by_person__product__satisFiyati')),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        )
+    )
+    total_profit_for_person = SalesPerson.objects.annotate(
+        total_profit_for_person=Sum(
+            (F('sales_by_person__product__satisFiyati') - F('sales_by_person__product__maaliyet')) * F(
+                'sales_by_person__quantity_sold'))
+    )
+
+    bor_kutusu_bilgisi = ''
+    sales_table = []
+
+    for idx, salesperson in enumerate(total_sales):
+
+        bor_kutusu_bilgisi += f"{salesperson.name} için Borç: {salesperson.debt}, Toplam Satış: {salesperson.total_sales}, Toplam Kar: {total_profit_for_person[idx].total_profit_for_person}<br>"
+
+        sales_info = Sales.objects.filter(
+            sold_by=salesperson,
+            date_sold__range=(start_date, end_date)
+        )
+        for sale in sales_info:
+            sales_table.append({
+                'salesperson_name': salesperson.name,
+                'borca': sale.is_credit,
+                'product_name': sale.product.name,
+                'quantity_sold': sale.quantity_sold,
+                'sale_amount': (sale.product.satisFiyati - sale.product.maaliyet) * sale.quantity_sold,
+                'product_price': sale.product.maaliyet,
+                'product_sold_price': sale.product.satisFiyati,
+                'sold_date': sale.date_sold,
+                'sales_person_tel': salesperson.phone_number,
+            })
+
+    return bor_kutusu_bilgisi, sales_table, total_profit_for_person
+
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+@login_required(login_url='login')
+def cast_page(request):
+    if request.user.is_authenticated:
+        salespeople = SalesPerson.objects.all()
+
+        # Get start and end dates from user input or default to today's date
+        start_date_str = request.GET.get('start_date', '')
+        end_date_str = request.GET.get('end_date', '')
+
+        today = date.today()
+
+        # Use the consistent 'Y-m-d' format for parsing
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d') if start_date_str else today
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else today + timedelta(
+            days=1)  # Assume end date is inclusive
+
+        # Bor kutusu bilgisini hesapla
+        bor_kutusu_bilgisi, sales_table, total_profit_for_person = calculate_bor_kutusu(start_date, end_date)
+
+        # Toplam borcu olan kişilerin toplam borcunu hesapla
+        total_debt = sum(salesperson.debt for salesperson in salespeople)
+        total_debt = float(total_debt)
+
+        return render(request, 'store/cast.html', {
+            'salespeople': salespeople,
+            'total_profit_for_person': total_profit_for_person,
+            'sales_table': sales_table,
+            'bor_kutusu_bilgisi': bor_kutusu_bilgisi,
+            'start_date': start_date_str if start_date_str else today.strftime('%Y-%m-%d'),
+            'end_date': end_date_str if end_date_str else (today + timedelta(days=1)).strftime('%Y-%m-%d'),
+            # Assume end date is inclusive
+            'total_debt': total_debt,
+        })
+    else:
+        return redirect('login')
+
+
+def update_debt(request, salesperson_id):
+    if request.user.is_authenticated and request.method == 'POST':
+        salesperson = get_object_or_404(SalesPerson, id=salesperson_id)
+        payment_amount_str = request.POST.get('payment_amount', '0')
+
+        try:
+            payment_amount = Decimal(payment_amount_str)
+        except ValueError:
+            return HttpResponse('Invalid Payment Amount', status=400)
+
+        if payment_amount > 0:
+            salesperson.debt -= payment_amount
+            salesperson.save()
+
+        return redirect('cast_page')
+
+    return HttpResponse('Bad Request', status=400)

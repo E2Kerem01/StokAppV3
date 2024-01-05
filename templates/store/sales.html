@@ -1,150 +1,26 @@
-<!-- quicksalepage.html -->
-{% extends 'base/base.html' %}
-
-<!-- ... diğer HTML başlık içeriği ... -->
-
-{% block content %}  
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        header {
-            background-color: #a0b9a1;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        form {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px 0px #ccc;
-        }
-
-        input {
-            padding: 8px;
-            border: none;
-            border-radius: 3px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 1px;
-            padding: 8px 15px;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <!-- Ürün arama formu -->
-        <form method="get" action="{% url 'quicksalepage' %}">
-            <input type="text" name="search" placeholder="Ürün Ara" value="{{ search_term }}">
-            <button type="submit">Ara</button>
-        </form>
-    </header>
-
-    <!-- Sayfa içeriği buraya gelecek -->
-
-</body>
-</html>
-
-    <!-- Günlük kar marjını göster -->
-    <p>Günlük Kar Marjı: {{ total_profit_margin }}</p>
-
-    <!-- Mevcut ürün listeleme döngüsü -->
-    {% for product in products %}
-        {% if search_term|lower in product.name|lower or not search_term %}
-            <div>
-
-                <style>
-                    .product-info-container {
-                        display: flex;
-                        justify-content: space-around;
-                        text-align: center;
-                        background-color: #f0f0f0; /* Kutu arka plan rengi */
-                        padding: 10px;
-                        border: 4px solid #202219;
-                        border-radius: 10px;
-                    }
-                
-                    .product-info {
-                        font-size: 18px;
-                        margin: 0;
-                        color: black;
-                    }
-                </style>
-                
-                <div class="product-info-container">
-                    <p class="product-info">Ürün ismi:  {{ product.name }}</p>
-                    <p class="product-info">Stok:   {{ product.stock }}</p>
-                    <p class="product-info">Maliyet:   {{ product.maaliyet }}</p>
-                    <p class="product-info">Satış Fiyatı:  {{ product.satisFiyati }}</p>
-                </div>
-                                
-                <style>
-                    .form-container {
-                        width: 100%; 
-                        margin: auto; 
-                        padding: 20px; 
-                        border: 1px solid #4CAF50; 
-                        border-radius: 10px; 
-                    }
-                </style>
-                
-                <div class="form-container">
-                    <form 
-                        id="quicksale-form-{{ product.id }}" 
-                        class="quicksale-form" 
-                        data-product-id="{{ product.id }}" 
-                        method="post" 
-                        action="{% url 'quicksalepage' %}"
-                    >
-                        {% csrf_token %}
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <label for="quantity_sold">{{ product.name }} Satılacak Miktarı:</label>
-                        <input type="number" name="quantity_sold" required>
-                        
-                        <button 
-                            type="button" 
-                            onclick="submitQuicksaleForm('{{ product.id }}')" 
-                            style="background-color: #4CAF50; color: white; font-weight: bold;"
-                        >
-                            Sat
-                        </button>
-                    </form>
-                </div>
-                {% if product.stock < 1 %}
-                <div class="message error">
-                    Yetersiz Stok: {{ product.name }} şu anda stokta bulunmamaktadır.
-                </div>
-                {% endif %}
-            </div>
-        {% endif %}
-    {% endfor %}
-
-
-    <script>
-        function submitQuicksaleForm(productId) {
-            const formId = `quicksale-form-${productId}`;
-            const form = document.getElementById(formId);
-            form.submit();
-        }
-    </script>
-
-{% endblock content %}
+<table class="data-table sales-details-table">
+    <thead>
+      <tr>
+        <th>İsim</th>
+        <th>Ürün</th>
+        <th>Miktar</th>
+        <th>Toplam Kar</th>
+        <th>Alış Tutarı</th>
+        <th>Satış Tutarı</th>
+        <th>Tarih</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sale_info in sales_info %}
+        <tr>
+          <td>{{ sale_info.sold_by.name }}</td>
+          <td>{{ sale_info.product.name }}</td>
+          <td>{{ sale_info.quantity_sold }}</td>
+          <td>{{ sale_info.sale_amount }}</td>
+          <td>{{ sale_info.product.maaliyet }}</td>
+          <td>{{ sale_info.product.satisFiyati }}</td>
+          <td>{{ sale_info.date_sold }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>

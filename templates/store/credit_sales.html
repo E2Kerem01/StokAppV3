@@ -1,0 +1,183 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+
+  <div class="container">
+
+    <form class="date-filter" method="get" action="{% url 'credit_sales_page' %}">
+      <label for="start_date">Start Date:</label>
+      <input type="date" id="start_date" name="start_date" value="{% if not start_date %}{{ today_date }}{% else %}{{ start_date|date:'Y-m-d' }}{% endif %}">
+
+      <label for="end_date">End Date:</label>
+      <input type="date" id="end_date" name="end_date" value="{% if not end_date %}{{ today_date }}{% else %}{{ end_date|date:'Y-m-d' }}{% endif %}">
+
+      <button type="submit">Filter</button>
+    </form>
+
+    <h2 class="section-title">Satış Bilgileri</h2>
+
+    <table class="data-table sales-info-table">
+      <thead>
+        <tr>
+          <th>İsim</th>
+          <th>telefon numarası</th>
+          <th>Ürün</th>
+          <th>Miktar</th>
+          <th>Toplam Kar</th>
+          <th>Alış Tutarı</th>
+          <th>Satış Tutarı</th>
+          <th>Ödeme Şekli</th>
+          <th>Tarih</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sale_info in sales_table %}
+          <tr>
+            <td>{{ sale_info.salesperson_name }}</td>
+            <td>{{sale_info.sales_person_tel}}</td>
+            <td>{{ sale_info.product_name }}</td>
+            <td>{{ sale_info.quantity_sold }}</td>
+            <td>{{ sale_info.sale_amount }}</td>
+            <td>{{ sale_info.product_price }}</td>
+            <td>{{ sale_info.product_sold_price }}</td>
+            <td>
+                {% if sale_info.borca %}
+                    Cari
+                {% else %}
+                    Nakit
+                {% endif %}
+            </td>
+            <td>{{ sale_info.sold_date }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+
+
+<!-- Tablonuzun altına sayfalama bağlantılarını ekleyin -->
+<div class="pagination">
+    <span class="step-links">
+        {% if sales_table.has_previous %}
+            <a href="?page=1&start_date={{ start_date }}&end_date={{ end_date }}">&laquo; first</a>
+            <a href="?page={{ sales_table.previous_page_number }}&start_date={{ start_date }}&end_date={{ end_date }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ sales_table.number }} of {{ sales_table.paginator.num_pages }}.
+        </span>
+
+        {% if sales_table.has_next %}
+            <a href="?page={{ sales_table.next_page_number }}&start_date={{ start_date }}&end_date={{ end_date }}">next</a>
+            <a href="?page={{ sales_table.paginator.num_pages }}&start_date={{ start_date }}&end_date={{ end_date }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      margin: 20px 0;
+      box-sizing: border-box;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: #f2f2f2;
+      color: #333;
+    }
+
+    .salespeople-table th, .salespeople-table td {
+      border: px solid #a0a0a0;
+    }
+
+    .sales-info-table th, .sales-info-table td {
+      border: 10px solid #e0e0e0;
+    }
+
+    .salespeople-table th {
+      background-color: #eaf7fd;
+    }
+
+    .sales-info-table th {
+      background-color: #fde5e5;
+    }
+
+    .box {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .box-title {
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .box-content {
+      color: #555;
+      text-align: center;
+    }
+
+    .date-filter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 80px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .date-filter label, .date-filter input, .date-filter button {
+      flex: 1;
+      margin: 5px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      border: solid;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+{% endblock %}

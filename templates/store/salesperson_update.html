@@ -1,0 +1,92 @@
+{% extends 'base/base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ salesperson.name }} - Güncelleme</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        main {
+            background-color: #fff;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #3498db;
+        }
+
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .list {
+            color: #27ae60;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .list:hover {
+            background-color: #229954;
+        }
+    </style>
+</head>
+<body>
+
+<main>
+    <h1>{{ salesperson.name }} - Güncelleme</h1>
+
+    <form method="post" action="{% url 'update_salesperson' pk=salesperson.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Güncelle</button>
+    </form>
+
+    <a href="{% url 'salesperson_detail' pk=salesperson.pk %}" class="list">Geri Dön</a>
+</main>
+
+{% endblock content %}

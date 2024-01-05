@@ -1,0 +1,172 @@
+<!-- store/cast.html -->
+{% extends 'base/base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cari Tablosu</title>
+    <title> </title>
+    <style>
+        /* Mevcut stiller */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-form {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .edit-form input {
+            width: 80px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Yeni stiller */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #333;
+        }
+
+        #search {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            width: 300px;
+            display: inline-block;
+        }
+
+        #search:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div>
+        <p style=" color: #4CAF50; font-size: 28px;">Toplam Alınacak Borç: {{ total_debt }} $</p>
+    </div>
+
+    <h2>Cari Tablosu</h2>
+    <h2> </h2>
+    <!-- Arama Butonu ve İsim Filtreleme -->
+    <div style=" margin-bottom: 20px;">
+        <label for="search">İsim Arama:</label>
+        <input type="text" id="search" oninput="filterNames()" placeholder="İsim girin...">
+    </div>
+
+    <table id="castTable">
+        <thead>
+            <tr>
+                <th>İsim</th>
+                <th>Telefon Numarası</th>
+                <th>Toplam Borç</th>
+                <th>Ödeme</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for salesperson in salespeople %}
+                <tr>
+                    <td>{{ salesperson.name }}</td>
+                    <td>{{ salesperson.phone_number }}</td>
+                    <td>{{ salesperson.debt }}</td>
+                    <td>
+                        <button class="edit-btn" onclick="showEditForm('{{ salesperson.id }}')">Düzenle</button>
+                        <div id="edit-form-{{ salesperson.id }}" class="edit-form">
+                            <form action="{% url 'update_debt' salesperson.id %}" method="post">
+                                {% csrf_token %}
+                                <label for="payment_amount">Ödeme Miktarı:</label>
+                                <input type="text" name="payment_amount" required>
+                                <button type="submit">Ödeme Yap</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <!-- Sayfalama düğmeleri buraya gelecek -->
+    </div>
+
+    <script>
+        function showEditForm(salespersonId) {
+            var editForm = document.getElementById('edit-form-' + salespersonId);
+            editForm.style.display = 'block';
+        }
+
+        function filterNames() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("castTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
+{% endblock %}

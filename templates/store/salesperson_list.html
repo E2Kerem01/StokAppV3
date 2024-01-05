@@ -76,24 +76,24 @@
         ul {
             margin-bottom: 20px; /* Tablo ile ul arasında 20px boşluk bırakır */
         }
-    
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px; /* Satırlar arasında 10px boşluk bırakır */
         }
-    
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
-    
+
         th {
             background-color: #f2f2f2;
         }
     </style>
-    
+
     <ul>
         <style>
             table {
@@ -101,18 +101,18 @@
                 border-collapse: collapse;
                 margin-top: 20px;
             }
-        
+
             th, td {
                 padding: 12px;
                 text-align: left;
-                border-bottom: 1px solid #ddd;
+                border-bottom: 2px solid #ddd;
             }
-        
+
             th:last-child,
             td:last-child {
                 text-align: center;
             }
-        
+
             a.edit-button {
                 display: inline-block;
                 padding: 8px 16px;
@@ -122,12 +122,59 @@
                 color: white;
                 transition: background-color 0.3s;
             }
-        
+
             a.edit-button:hover {
                 background-color: #229954; /* Hover rengi */
             }
         </style>
-        
+
+        <style>
+            .search-form {
+                margin-bottom: 20px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 5px;
+                color: #555;
+            }
+
+            .input-group {
+                display: flex;
+            }
+
+            input {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            button {
+                padding: 8px 15px;
+                background-color: #3498db;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            button:hover {
+                background-color: #2980b9;
+            }
+        </style>
+
+
+        <form method="get" action="{% url 'salesperson_list' %}" class="search-form">
+            <label for="search-input">Search by Name, Phone, or Debt:</label>
+            <div class="input-group">
+                <input type="text" id="search-input" name="q" value="{{ query }}" placeholder="Enter name, phone, or debt...">
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+
+
         <table>
             <tr>
                 <th>İsim</th>
@@ -144,12 +191,33 @@
                 </tr>
             {% endfor %}
         </table>
-        
+
     </ul>
-    
+
 
     <a class="add-salesperson" href="{% url 'create_salesperson' %}">Yeni Satış Yapan Kişi Ekle</a>
-    
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if salespeople.has_previous %}
+                <a href="?page={{ salespeople.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ salespeople.number }} of {{ salespeople.paginator.num_pages }}.
+            </span>
+
+            {% if salespeople.has_next %}
+                <a href="?page={{ salespeople.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+
+
+
+
+
+
 </body>
 </html>
 

@@ -3,7 +3,8 @@
 from django.urls import path
 from .views import create_product, productmanagement, category, quick_sale, quick_sale_page, sales_history, \
     product_sales_history, salesperson_list, create_salesperson, salesperson_detail, SalesPersonDeleteView, \
-    SalesPersonUpdateView, QuickAddUpdate, update_product
+    SalesPersonUpdateView, QuickAddUpdate, update_product, update_salesperson_, credit_sales_page, cast_page, \
+    update_debt
 
 urlpatterns = [
 
@@ -24,5 +25,13 @@ urlpatterns = [
     path('salesperson/<int:pk>/', salesperson_detail, name='salesperson_detail'),
     path('salesperson/<int:pk>/delete/', SalesPersonDeleteView.as_view(), name='delete_salesperson'),
     path('salesperson/<int:pk>/update/', SalesPersonUpdateView.as_view(), name='update_salesperson'),
+
+
+    # MEHMET PATH
+
+    path('update_salesperson/<int:pk>/', update_salesperson_, name='update_salesperson'),
+    path('credit_sales/', credit_sales_page, name='credit_sales_page'),
+    path('cast/', cast_page, name='cast_page'),
+    path('update_debt/<int:salesperson_id>/', update_debt, name='update_debt'),
 
 ]

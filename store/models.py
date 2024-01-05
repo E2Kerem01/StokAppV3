@@ -66,17 +66,6 @@ class Product(models.Model):
 
 
 # MEHMET KOD
-
-class Sales(models.Model):
-    product = models.ForeignKey('QuickAdd', on_delete=models.CASCADE)
-    quantity_sold = models.PositiveIntegerField()
-    sold_to = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_sold = models.DateTimeField(default=timezone.now)
-
-    def total_profit_margin(self):
-        return (self.product.satisFiyati - self.product.maaliyet) * self.quantity_sold
-
-
 class SalesPerson(models.Model):
     name = models.CharField(max_length=100, verbose_name='İsim', unique=True)
     phone_number = models.CharField(max_length=15, verbose_name='Telefon Numarası', unique=True)
@@ -88,6 +77,20 @@ class SalesPerson(models.Model):
 
     class Meta:
         verbose_name_plural = 'Satış Yapan Kişiler'
+
+
+class Sales(models.Model):
+    product = models.ForeignKey('QuickAdd', on_delete=models.CASCADE)
+    quantity_sold = models.PositiveIntegerField()
+    sold_to = models.ForeignKey(User, on_delete=models.CASCADE)
+    sold_by = models.ForeignKey(SalesPerson, on_delete=models.CASCADE, related_name='sales_by_person', null=True, blank=True)
+    date_sold = models.DateTimeField(default=timezone.now)
+    is_credit = models.BooleanField(default=False)
+
+    def total_profit_margin(self):
+        return (self.product.satisFiyati - self.product.maaliyet) * self.quantity_sold
+
+
 
 
 # silme yeriii
