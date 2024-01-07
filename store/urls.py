@@ -4,7 +4,7 @@ from django.urls import path
 from .views import create_product, productmanagement, category, quick_sale, quick_sale_page, sales_history, \
     product_sales_history, salesperson_list, create_salesperson, salesperson_detail, SalesPersonDeleteView, \
     SalesPersonUpdateView, QuickAddUpdate, update_product, update_salesperson_, credit_sales_page, cast_page, \
-    update_debt
+    update_debt,salesperson_details
 
 urlpatterns = [
 
@@ -33,5 +33,7 @@ urlpatterns = [
     path('credit_sales/', credit_sales_page, name='credit_sales_page'),
     path('cast/', cast_page, name='cast_page'),
     path('update_debt/<int:salesperson_id>/', update_debt, name='update_debt'),
+    path('salesperson-details/<int:salesperson_id>/', salesperson_details, name='salesperson_details'),
+
 
 ]

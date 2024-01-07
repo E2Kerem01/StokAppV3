@@ -3,6 +3,8 @@
 {% block content %}
 
 
+
+
   <div class="container">
 
     <form class="date-filter" method="get" action="{% url 'credit_sales_page' %}">
@@ -17,8 +19,30 @@
 
     <h2 class="section-title">Satış Bilgileri</h2>
 
-    <table class="data-table sales-info-table">
+    <input type="text" id="searchInput" placeholder="İsim veya Ürün Ara">
+    <button onclick="searchTable()">Ara</button>
+    
+    <button onclick="exportToExcel()">Excel'e Aktar</button>
+
+    <table class="data-table sales-info-table" id="salesTableSummary">
+      <tr>
+        <td>Total Yapılan Satış</td>
+        <td>Ürünlerin Toplam Maliyeti</td>
+        <td>Total Satıştan Yapılan Kar</td>
+      </tr>
+      <tr>
+        <td><span id="totalProfitAmount" ></span> $</td>
+        <td><span id="totalPurchaseAmount" ></span> $</td>
+        <td><span id="totalSaleAmount"></span>  $</td>
+      </tr>
+    </table>
+  
+
+
+    <table class="data-table sales-info-table" id="salesTable">
       <thead>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
         <tr>
           <th>İsim</th>
           <th>telefon numarası</th>
@@ -51,12 +75,114 @@
             <td>{{ sale_info.sold_date }}</td>
           </tr>
         {% endfor %}
-      </tbody>
-
+      </tbody>      
     </table>
+    
+    <!-- Toplamı Gösterme Bölümü -->
+   
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        var searchInput = $('#searchInput');
+        var salesTable = $('#salesTable tbody');
+        var totalSaleAmountSpan = $('#totalSaleAmount');
+        var totalPurchaseAmountSpan = $('#totalPurchaseAmount');
+        var totalProfitAmountSpan = $('#totalProfitAmount');
+    
+        searchInput.on('input', function () {
+          searchTable();
+        });
+    
+        function searchTable() {
+          var filter = searchInput.val().toUpperCase();
+          salesTable.find('tr').each(function () {
+            var row = $(this);
+            var tdList = row.find('td');
+            var found = false;
+            tdList.each(function () {
+              var td = $(this);
+              var txtValue = td.text().toUpperCase();
+              if (txtValue.indexOf(filter) > -1) {
+                found = true;
+                return false; // Break the inner loop
+              }
+            });
+            if (found) {
+              row.show();
+            } else {
+              row.hide();
+            }
+          });
+    
+          updateTotalAmounts(); // Arama sonrasında toplam tutarları güncelle
+        }
+    
+        function updateTotalAmounts() {
+          var totalSaleAmount = 0;
+          var totalPurchaseAmount = 0;
+          var totalProfitAmount = 0;
+    
+          salesTable.find('tr:visible').each(function () {
+            var quantity = parseFloat($(this).find('td:eq(3)').text()); // 3, miktar sütununun sırasını temsil eder
+            var saleAmount = parseFloat($(this).find('td:eq(4)').text()); // 4, satış tutarı sütununun sırasını temsil eder
+            var purchaseAmount = parseFloat($(this).find('td:eq(5)').text()); // 5, alış tutarı sütununun sırasını temsil eder
+            var profitAmount = parseFloat($(this).find('td:eq(6)').text()); // 6, toplam kar sütununun sırasını temsil eder
+    
+            if (!isNaN(quantity) && !isNaN(saleAmount)) {
+              totalSaleAmount += saleAmount;
+            }
+    
+            if (!isNaN(quantity) && !isNaN(purchaseAmount)) {
+              totalPurchaseAmount += quantity * purchaseAmount;
+            }
+    
+            if (!isNaN(quantity) && !isNaN(profitAmount)) {
+              totalProfitAmount += quantity * profitAmount;
+            }
+          });
+    
+          totalSaleAmountSpan.text(totalSaleAmount.toFixed(2));
+          totalPurchaseAmountSpan.text(totalPurchaseAmount.toFixed(2));
+          totalProfitAmountSpan.text(totalProfitAmount.toFixed(2));
+        }
+    
+       
+        updateTotalAmounts();
+        setInterval(updateTotalAmounts, 1000); // Her saniye güncelleme yap
+      });
+    </script>
+    
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
+<script>
+  function exportToExcel() {
+    try {
+      // İlk tablo verileri
+      var table = document.getElementById('salesTable');
+      var data = XLSX.utils.table_to_book(table).Sheets.Sheet1;
+
+      // İkinci tablo verileri
+      var table2 = document.getElementById('salesTableSummary');
+      var data2 = XLSX.utils.table_to_book(table2).Sheets.Sheet1;
+
+      // Excel dosyasını oluştur
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, data, 'SatışDetayları'); 
+      XLSX.utils.book_append_sheet(wb, data2, 'Toplam Satış Özeti'); 
+
+      // Dosyayı indir
+      XLSX.writeFile(wb, 'Satışraporu.xlsx');                                               
+    } catch (error) {
+      console.error(error);
+    }
+  }
+</script>
+
+
+  
   </div>
 
-
+  
 <!-- Tablonuzun altına sayfalama bağlantılarını ekleyin -->
 <div class="pagination">
     <span class="step-links">
@@ -180,4 +306,6 @@
       background-color: #45a049;
     }
   </style>
+
+  
 {% endblock %}

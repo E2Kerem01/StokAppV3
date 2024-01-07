@@ -1,0 +1,84 @@
+<!-- templates/store/rapor_cari.html -->
+
+{% extends 'base/base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Gerekli meta etiketleri, başlık ve stil bağlantıları buraya gelecek -->
+    <style>
+        /* Stil tanımlamaları buraya gelecek */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+
+
+</head>
+<body>
+    <h2>{{ salesperson.name }} CARİ HAREKETLERİ</h2>
+    <p>Güncel Bakiye: {{ total_debt }} {{ currency }}</p>
+
+    <form method="get" action="{% url 'salesperson_details' salesperson_id %}">
+        <label for="start_date">Başlangıç Tarihi:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date|default:'' }}" required>
+
+        <label for="end_date">Bitiş Tarihi:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date|default:'' }}" required>
+
+        <button type="submit">Filtrele</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Tarih</th>
+                <th>Satış Personeli</th>
+                <th>Açıklama</th>
+                <th>Adet</th>
+                <th>Birim Fiyat</th>
+                <th>Tutar</th>
+                <th>İşlem türü</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for payment in sales_table %}
+                {% if payment.borca or payment.product_name == 'ÖDEME(Nakit)' %}
+                    <tr>
+                        <td>{{ payment.sold_date }}</td>
+                        <td>{{ payment.salesperson_name }}</td>
+                        <td>{{ payment.product_name }}</td>
+                        <td>{{ payment.quantity_sold }}</td>
+                        <td>{{ payment.product_sold_price }}</td>
+                        <td>{{ payment.sale_amount }}</td>
+                        <td>
+                            {% if payment.borca %}
+                                Cari
+                            {% else %}
+                                ÖDEME(Nakit)
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+{% endblock %}

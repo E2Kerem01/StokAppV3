@@ -3,22 +3,22 @@
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="active">
-                    <a href="{% url 'dashboard' %}"><i class="menu-icon fa fa-laptop"></i>Yönetici Alanı </a>
+                    <a href="{% url 'dashboard' %}"><i class="menu-icon fa fa-laptop"></i>Yönetim Paneli</a>
                 </li>
                 <li class="menu-title">{{ request.user.username }} Store</li><!-- /.menu-title -->
                 <li class="menu-item-has-children dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-paper-plane"></i>Hızlı Satış</a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li><i class="fa fa-id-card-o"></i><a href="http://127.0.0.1:8000/quicksalepage/">Add</a></li>
-                        <li><i class="fa fa-th"></i><a href="http://127.0.0.1:8000/sales">View</a></li>
+                        <li><i class="fa fa-id-card-o"></i><a href="{% url 'quicksalepage' %}">Satış Yap</a></li>
+                        <li><i class="fa fa-th"></i><a href="{% url 'sales_history' %}">Satış Hareketleri</a></li>
                     </ul>
                 </li>
 
                 <li class="menu-item-has-children dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-users"></i>Rapor</a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li><i class="fa fa-id-card-o"></i><a href="#">Add</a></li>
-                        <li><i class="fa fa-th"></i><a href="http://127.0.0.1:8000/credit_sales/">View</a></li>
+                        <li><i class="fa fa-id-card-o"></i><a href="#">Şuan Boş Burası</a></li>
+                        <li><i class="fa fa-th"></i><a href="{% url 'credit_sales_page' %}">Genel Satış Raporu</a></li>
                     </ul>
                 </li>
 
@@ -37,9 +37,9 @@
                 <li class="menu-item-has-children dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-product-hunt"></i>Cari kartlar</a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li><i class="fa fa-id-card-o"></i><a href="http://127.0.0.1:8000/salesperson/create/">Add</a></li>
-                        <li><i class="fa fa-th"></i><a href="http://127.0.0.1:8000/salesperson/">View</a></li>
-                        <li><i class="fa fa-th"></i><a href="http://127.0.0.1:8000/cast/">Cari Borç Edit</a></li>
+                        <li><i class="fa fa-id-card-o"></i><a href="{% url 'create_salesperson' %}">Yeni Cari Ekle</a></li>
+                        <li><i class="fa fa-th"></i><a href="{% url 'salesperson_list' %}">Kayıtlı Cariler</a></li>
+                        <li><i class="fa fa-th"></i><a href="{% url 'cast_page' %}">Cari Borç Silme/Düzenleme</a></li>
                     </ul>
                 </li>
 

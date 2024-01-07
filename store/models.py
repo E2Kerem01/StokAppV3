@@ -78,6 +78,13 @@ class SalesPerson(models.Model):
     class Meta:
         verbose_name_plural = 'Satış Yapan Kişiler'
 
+class Payment(models.Model):
+    salesperson = models.ForeignKey('SalesPerson', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_paid = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"{self.salesperson.name} - {self.amount} - {self.date_paid}"
 
 class Sales(models.Model):
     product = models.ForeignKey('QuickAdd', on_delete=models.CASCADE)
@@ -86,22 +93,7 @@ class Sales(models.Model):
     sold_by = models.ForeignKey(SalesPerson, on_delete=models.CASCADE, related_name='sales_by_person', null=True, blank=True)
     date_sold = models.DateTimeField(default=timezone.now)
     is_credit = models.BooleanField(default=False)
+    is_payment = models.BooleanField(default=False)
 
     def total_profit_margin(self):
         return (self.product.satisFiyati - self.product.maaliyet) * self.quantity_sold
-
-
-
-
-# silme yeriii
-
-@receiver(post_save, sender=QuickAdd)
-def delete_quickadd(sender, instance, **kwargs):
-    if instance.stock == 0:
-        try:
-            with transaction.atomic():
-                instance.delete()
-        except QuickAdd.DoesNotExist:
-            pass
-        except Exception as e:
-            print(f'Hata oluştu: {e}')

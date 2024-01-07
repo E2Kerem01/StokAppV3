@@ -15,7 +15,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 20px;   
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
@@ -97,7 +97,7 @@
     <div>
         <p style=" color: #4CAF50; font-size: 28px;">Toplam Alınacak Borç: {{ total_debt }} $</p>
     </div>
-
+    
     <h2>Cari Tablosu</h2>
     <h2> </h2>
     <!-- Arama Butonu ve İsim Filtreleme -->
@@ -121,8 +121,10 @@
                     <td>{{ salesperson.name }}</td>
                     <td>{{ salesperson.phone_number }}</td>
                     <td>{{ salesperson.debt }}</td>
+                                        
                     <td>
                         <button class="edit-btn" onclick="showEditForm('{{ salesperson.id }}')">Düzenle</button>
+                        <button class="edit-btn" onclick="redirectToDetailsPage('{{ salesperson.id }}')">Detayları Gör</button>
                         <div id="edit-form-{{ salesperson.id }}" class="edit-form">
                             <form action="{% url 'update_debt' salesperson.id %}" method="post">
                                 {% csrf_token %}
@@ -140,7 +142,13 @@
     <div class="pagination">
         <!-- Sayfalama düğmeleri buraya gelecek -->
     </div>
-
+    <script>
+        function redirectToDetailsPage(salespersonId) {
+            // Redirect to the salesperson-details view with the salespersonId as a parameter
+            window.location.href = '/salesperson-details/' + salespersonId + '/';
+        }
+    </script>
+    
     <script>
         function showEditForm(salespersonId) {
             var editForm = document.getElementById('edit-form-' + salespersonId);
