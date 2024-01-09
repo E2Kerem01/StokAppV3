@@ -3,19 +3,19 @@
 <header id="header" class="header">
     <div class="top-left">
         <div class="navbar-header">
-            <a class="navbar-brand" href="./"><img src="{% static 'images/logo_1.png' %}" alt="Logo"></a>
-            <a class="navbar-brand hidden" href="./"><img src="{% static 'images/logo2.png' %}" alt="Logo"></a>
-            <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+            <a class="navbar-brand" href="./"><img src="{% static 'images/logo_1.png' %}" alt="Logo" style="max-width: 15%; height: auto;"></a>
+            <a class="navbar-brand hidden" href="./"><img src="{% static 'images/logo2.png' %}" alt="Logo" ></a>
+            <a id="menuToggle" class="menutoggle" style = "margin-right: 5%;"><i class="fa fa-bars"></i></a>
         </div>
     </div>
     <div class="top-right">
         <div class="header-menu">
             <div class="header-left">
                 {% if request.user.is_authenticated %}
-                    <button class="search-trigger">{{ request.user.username }}!</button>
+                    <button class="search-trigger">{{ request.user.username }}</button>
                     <!-- Diğer işlemler -->
                 {% endif %}
-                
+
                 <button class="search-trigger"><i class="fa fa-search"></i></button>
                 <div class="form-inline">
                     <form class="search-form">

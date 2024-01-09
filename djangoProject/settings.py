@@ -28,10 +28,11 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['kerem01.pythonanywhere.com']
+ALLOWED_HOSTS = []
 CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', cast=list)
 
-
+#Canlı Çıkışı Aktif Edilmesi Gerekenler
+#ALLOWED_HOSTS = ['kerem01.pythonanywhere.com']
 # Application definition
 
 INSTALLED_APPS = [
@@ -135,11 +136,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 6fad0138a13bf6cd1c322707ec3a857e0e8a3e30
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Örnek olarak bu yol kullanılabilir
 
