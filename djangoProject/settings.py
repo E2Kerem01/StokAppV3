@@ -150,10 +150,22 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_URL = '/sistem/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 CRISPY_ALLOWED_TEMPLATES_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 LOGOUT_REDIRECT_URL = '/logout/'
+
+
+# MAİL GÖNDERİM İŞLERİ
+
+# E-posta gönderimi için gerekli ayarlar
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # E-posta sağlayıcınızın SMTP sunucusu
+EEMAIL_PORT = 587  # Gmail için genellikle 587 portu kullanılır
+EMAIL_USE_TLS = True  # TLS kullanımını etkinleştirin
+EMAIL_USE_SSL = False  # SSL kullanımını devre dışı bırakın (TLS kullanılıyorsa)
+EMAIL_HOST_USER = 'stokappuygulama@gmail.com'  # E-posta adresiniz
+EMAIL_HOST_PASSWORD = 'KeremMehmet01.'  # E-posta adresinizin şifresi veya uygulama parolası (Güvenlik için parolanızı settings.py dosyasına yazmak önerilmez, ortam değişkenleri veya başka bir güvenli yöntem kullanılabilir)
+DEFAULT_FROM_EMAIL = 'stokappuygulama@gmail.com'  # Varsayılan gönderen e-posta adresi

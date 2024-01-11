@@ -4,7 +4,7 @@ from django.urls import path
 from .views import create_product, productmanagement, category, quick_sale, quick_sale_page, sales_history, \
     product_sales_history, salesperson_list, create_salesperson, salesperson_detail, SalesPersonDeleteView, \
     SalesPersonUpdateView, QuickAddUpdate, update_product, update_salesperson_, credit_sales_page, cast_page, \
-    update_debt,salesperson_details
+    update_debt, salesperson_details, change_password
 
 urlpatterns = [
 
@@ -13,6 +13,7 @@ urlpatterns = [
     path('category/', category, name='category'),
      #path('products/', product_list, name='product_list'),
     path('update_product/<int:pk>/', update_product, name='update_product'),
+    path('changepassword/', change_password, name = 'change_password'),
 
     # MEHMET PATH
 
@@ -23,8 +24,8 @@ urlpatterns = [
     path('salesperson/', salesperson_list, name='salesperson_list'),
     path('salesperson/create/', create_salesperson, name='create_salesperson'),
     path('salesperson/<int:pk>/', salesperson_detail, name='salesperson_detail'),
-    path('salesperson/<int:pk>/delete/', SalesPersonDeleteView.as_view(), name='delete_salesperson'),
-    path('salesperson/<int:pk>/update/', SalesPersonUpdateView.as_view(), name='update_salesperson'),
+    path('salesperson/<int:pk>/delete/', SalesPersonDeleteView, name='delete_salesperson'),
+    path('salesperson/<int:pk>/update/', SalesPersonUpdateView, name='update_salesperson'),
 
 
     # MEHMET PATH
