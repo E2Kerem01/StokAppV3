@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
-@login_required(login_url='sistem')
 class QuickAddUpdate(UpdateView):
     model = QuickAdd
     form_class = QuickAddForm
@@ -66,155 +65,6 @@ def update_product(request, pk):
         return JsonResponse({'success': True})  # Başarılı yanıt
     else:
         return JsonResponse({'error': 'Geçersiz istek'})
-
-
-# @csrf_exempt
-# @login_required(login_url='sistem')
-# def update_product(request, pk):
-#     if request.method == 'POST':
-#         updated_name = request.POST.get('name')
-#         updated_stock = request.POST.get('stock')
-#         updated_maaliyet = request.POST.get('maaliyet')
-#         updated_satis_fiyati = request.POST.get('satisFiyati')
-#         updated_birim = request.POST.get('birim')
-#         updated_barkod_no = request.POST.get('barkodNo')
-#
-#         try:
-#             product = QuickAdd.objects.get(pk=pk, user=request.user)
-#             product.name = updated_name
-#             product.stock = updated_stock
-#             product.maaliyet = updated_maaliyet
-#             product.satisFiyati = updated_satis_fiyati
-#             product.birim = updated_birim
-#             product.barkodNo = updated_barkod_no
-#
-#             product.save()
-#             return JsonResponse({'success': True})  # Başarılı olduğunda JSON yanıtı
-#         except QuickAdd.DoesNotExist:
-#             return JsonResponse({'success': False, 'error': 'Ürün bulunamadı'})  # Hata durumunda JSON yanıtı
-#
-#     return JsonResponse({'success': False, 'error': 'Geçersiz istek'})  # Diğer durumlarda geçersiz istek yanıtı
-
-# @csrf_exempt
-# @login_required(login_url='sistem')
-# def update_product(request, pk):
-#     # Mevcut ürünü al
-#     product = get_object_or_404(QuickAdd, pk=pk)
-#
-#     if request.method == 'POST':
-#         print("asdf")
-#         # Mevcut verilerle formu doldur
-#         form = QuickAddForm(request.POST, instance=product)
-#
-#         if form.is_valid():
-#             # Sadece belirli alanları güncelle
-#             updated_name = form.cleaned_data['name']
-#             updated_stock = form.cleaned_data['stock']
-#             print(updated_stock)
-#             updated_maaliyet = form.cleaned_data['maaliyet']
-#             updated_satisFiyati = form.cleaned_data['satisFiyati']
-#             updated_currency = form.cleaned_data['currency']
-#             updated_barkodNo = form.cleaned_data['barkodNo']
-#             # Diğer güncellenmesi gereken alanları da buraya ekleyin
-#
-#             # Yalnızca değiştirilen alanları güncelle
-#             product.name = updated_name
-#             print(product.name)
-#             product.stock = updated_stock
-#             product.maaliyet = updated_maaliyet
-#             product.satisFiyati = updated_satisFiyati
-#             product.currency = updated_currency
-#             product.barkodNo = updated_barkodNo
-#             # Diğer alanları da güncelleyin
-#
-#             product.save()  # Değiştirilen alanları kaydet
-#
-#             return JsonResponse({'success': True})  # Başarılı olduğunda JSON yanıtı
-#         else:
-#             # print(form.errors)
-#             return JsonResponse({'success': False, 'error': 'Form geçersiz'})  # Hata durumunda JSON yanıtı
-#
-#     # GET istekleri için formu doldur
-#     else:
-#         form = QuickAddForm(instance=product)
-#
-#     # Formu ve diğer gereklilikleri döndür
-#     context = {'form': form}
-#     return render(request, 'store/productmanagement.html', context)
-
-
-# @csrf_exempt
-# @login_required(login_url='sistem')
-# def update_product(request, pk):
-#
-#     if request.method == 'POST':
-#         form = QuickAddForm(request.POST)
-#         user_products = QuickAdd.objects.filter(user=request.user)
-#         if form.is_valid():
-#             product = form.save(commit=False)
-#             product.user = request.user
-#             product.save()
-#             return JsonResponse({'success': True})  # Başarılı olduğunda JSON yanıtı
-#
-#         else:  # Eğer ürün yoksa yeni ürün oluştur
-#             form = QuickAddForm(request.POST)
-
-
-# @login_required(login_url='sistem')
-# def update_product(request, pk):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         try:
-#             product = QuickAdd.objects.get(pk=pk)
-#
-#             for field, value in data.items():
-#                 setattr(product, field, value)
-#
-#             product.save()
-#             return JsonResponse({'success': True})
-#         except QuickAdd.DoesNotExist:
-#             return JsonResponse({'success': False, 'error': 'Ürün bulunamadı'})
-#     return JsonResponse({'success': False, 'error': 'Geçersiz istek'})
-#
-#
-# @login_required(login_url='sistem')
-# def delete_product(request, pk):
-#     if request.method == 'POST':
-#         product = QuickAdd.objects.get(pk=pk)
-#         product.delete()
-#         return JsonResponse({'success': True})
-#     return JsonResponse({'success': False})
-
-
-# @login_required(login_url='login')
-# def quickadd(request):
-#     if request.method == 'POST':
-#         form = QuickAddForm(request.POST)
-#         if form.is_valid():
-#             product = form.save(commit=False)
-#             product.user = request.user  # Oluşturan kullanıcıyı atama
-#             product.save()
-#             return render(request, 'dashboard.html', {'form': QuickAddForm()})
-#     else:
-#         form = QuickAddForm()
-#
-#     context = {'form': form}
-#     return render(request, 'dashboard.html', context)
-
-# @login_required(login_url='sistem')
-# def quickadd(request):
-#     if request.method == 'POST':
-#         form = QuickAddForm(request.POST)
-#         if form.is_valid():
-#             product = form.save(commit=False)
-#             product.user = request.user  # Oluşturan kullanıcıyı atama
-#             product.save()
-#             return redirect('dashboard')  # Dashboard'a geri dön
-#     else:
-#         form = QuickAddForm()
-#
-#     context = {'form': form}
-#     return render(request, 'dashboard.html', context)
 
 @login_required(login_url='sistem')
 def create_product(request):
@@ -360,7 +210,6 @@ def salesperson_details(request, salesperson_id):
     return render(request, 'store/rapor_cari.html', context)
 
 
-@login_required(login_url='sistem')
 def calculate_bor_kutusu_salesdetails(salesperson, start_date, end_date):
     sales_table = []
 
@@ -417,7 +266,6 @@ class SalesPersonDeleteView(DeleteView):
     success_url = reverse_lazy('salesperson_list')
 
 
-@login_required(login_url='sistem')
 class SalesPersonUpdateView(UpdateView):
     model = SalesPerson
     form_class = SalesPersonForm
@@ -526,12 +374,10 @@ def sales_history(request):
     return render(request, 'store/sales_history.html', {'sales': sales})
 
 
-@login_required(login_url='sistem')
 def calculate_profit_margin(product):
     return product.satisFiyati - product.maaliyet
 
 
-@login_required(login_url='sistem')
 def update_total_profit_margin(total_profit_margin, profit_margin):
     return total_profit_margin + profit_margin
 
@@ -603,6 +449,8 @@ def quick_sale_page(request):
         return redirect('login')
 
 
+
+
 @login_required(login_url='sistem')
 def credit_sales_page(request):
     if request.user.is_authenticated:
@@ -649,7 +497,6 @@ def credit_sales_page(request):
         return redirect('login')
 
 
-@login_required(login_url='sistem')
 def calculate_bor_kutusu(start_date, end_date):
     # Toplam Borcu hesaplama bölümü
     total_sales = SalesPerson.objects.annotate(
