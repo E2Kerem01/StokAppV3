@@ -450,7 +450,7 @@ def quick_sale_page(request):
         return redirect('login')
 
 
-@login_required(login_url='sistem')
+@login_required(login_url='login')
 def credit_sales_page(request):
     if request.user.is_authenticated:
         salespeople = SalesPerson.objects.all()
@@ -703,4 +703,3 @@ class ExportToExcelView(View):
 @login_required(login_url='login')
 def backup_data_view(request):
     return render(request, 'store/yedekleme.html')
-#########################################################################################################################################################################

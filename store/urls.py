@@ -3,7 +3,7 @@
 from django.urls import path
 from .views import create_product, productmanagement, category, quick_sale, quick_sale_page, sales_history, \
     product_sales_history, salesperson_list, create_salesperson, salesperson_detail, SalesPersonDeleteView, \
-    SalesPersonUpdateView, QuickAddUpdate, update_product, update_salesperson_, credit_sales_page, cast_page, \
+    SalesPersonUpdateView, QuickAddUpdate, update_product, update_salesperson_, credit_sales_page, cast_page,\
     update_debt, salesperson_details, change_password, backup_data_view,ExportToExcelView,ExcelProcessorView
 
 urlpatterns = [
