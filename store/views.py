@@ -66,6 +66,7 @@ def update_product(request, pk):
     else:
         return JsonResponse({'error': 'Geçersiz istek'})
 
+
 @login_required(login_url='sistem')
 def create_product(request):
     if request.method == 'POST':
@@ -449,8 +450,6 @@ def quick_sale_page(request):
         return redirect('login')
 
 
-
-
 @login_required(login_url='sistem')
 def credit_sales_page(request):
     if request.user.is_authenticated:
@@ -628,3 +627,80 @@ def quick_sale(request):
             messages.error(request, 'Satış için yeterli stok yok.')
 
     return redirect('dashboard')
+
+
+from django.views.generic import View
+import logging
+from django.db import transaction
+import pandas as pd
+
+logger = logging.getLogger(__name__)
+
+
+class ExcelProcessorView(View):
+    template_name = 'excel_processor.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        if 'excel_file' in request.FILES:
+            excel_file = request.FILES['excel_file']
+            try:
+                # Read Excel file
+                df = pd.read_excel(excel_file)
+
+                # Process DataFrame and update the database
+                data_list = df.to_dict(orient='records')
+
+                with transaction.atomic():
+                    # Clear existing data in the database
+                    QuickAdd.objects.all().delete()
+
+                    # Create new records based on the Excel data
+                    for excel_row in data_list:
+                        excel_row['user'] = request.user
+                        QuickAdd.objects.create(**excel_row)
+
+                # Log success
+                logger.info(f"Excel file processed successfully: {excel_file.name}")
+
+                # Send a success response
+                return JsonResponse({'success': True, 'message': 'Veriler başarıyla işlendi.'})
+
+            except Exception as e:
+                # Log the error
+                logger.error(f"Error processing Excel file: {e}")
+
+                # Send an error response
+                return JsonResponse({'success': False, 'message': 'Veriler basariyla islendi.'})
+        else:
+            # Send an error response if no file is provided
+            return JsonResponse({'success': False, 'message': 'Dosya gönderilmedi.'})
+
+
+class ExportToExcelView(View):
+    def get(self, request, *args, **kwargs):
+        # Get data from the database
+        data = QuickAdd.objects.all().values()
+
+        # Create a DataFrame from the database data
+        df = pd.DataFrame.from_records(data)
+
+        # Convert datetime columns to timezone-unaware datetimes
+        df['created_day'] = df['created_day'].dt.tz_localize(None)
+
+        # Create a response with the Excel file
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=YEDEK_DOSYASI.xlsx'
+
+        # Write the DataFrame to the response
+        df.to_excel(response, index=False, engine='xlsxwriter')
+
+        return response
+
+
+@login_required(login_url='login')
+def backup_data_view(request):
+    return render(request, 'store/yedekleme.html')
+#########################################################################################################################################################################
