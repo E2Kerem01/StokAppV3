@@ -169,3 +169,13 @@ EMAIL_USE_SSL = False  # SSL kullanımını devre dışı bırakın (TLS kullan�
 EMAIL_HOST_USER = 'stokappuygulama@gmail.com'  # E-posta adresiniz
 EMAIL_HOST_PASSWORD = 'KeremMehmet01.'  # E-posta adresinizin şifresi veya uygulama parolası (Güvenlik için parolanızı settings.py dosyasına yazmak önerilmez, ortam değişkenleri veya başka bir güvenli yöntem kullanılabilir)
 DEFAULT_FROM_EMAIL = 'stokappuygulama@gmail.com'  # Varsayılan gönderen e-posta adresi
+
+#Mesajlar için
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.SUCCESS: 'success',
+    messages.ERROR: 'danger',
+    messages.WARNING: 'warning',
+    messages.INFO: 'info',
+    messages.DEBUG: 'primary',
+}

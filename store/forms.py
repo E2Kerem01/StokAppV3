@@ -1,5 +1,6 @@
 from django import forms
 from .models import QuickAdd, Product, Category, SalesPerson
+from django.contrib.auth.models import User
 
 
 class SalesPersonForm(forms.ModelForm):
@@ -23,9 +24,11 @@ class QuickAddForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control', 'id': 'category'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(QuickAddForm, self).__init__(*args, **kwargs)
-        self.fields['category'].queryset = Category.objects.all()
+        self.fields['category'].queryset = Category.objects.filter(user=user)
+
+    # views.py
 
         # CURRENCY_CHOICES = [
         #     ('USD', 'Dolar'),
@@ -65,3 +68,13 @@ class ProductForm(forms.ModelForm):
                 'class': 'form-control', 'id': 'sortno'
             })
         }
+
+class UsernameChangeForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+
+    def clean_username(self):
+        new_username = self.cleaned_data['username']
+        # Kullanıcı adı doğrulama işlemleri buraya eklenir
+        return new_username

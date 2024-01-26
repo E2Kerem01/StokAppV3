@@ -27,7 +27,8 @@ class Store(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=120, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=120, unique=False, null=False)
     description = models.CharField(max_length=255, default='')
     created_date = models.DateTimeField(default=timezone.now)
 
@@ -37,13 +38,13 @@ class Category(models.Model):
 
 class QuickAdd(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=120, unique=True, null=False)
+    name = models.CharField(max_length=120, unique=False, null=False)
     stock = models.PositiveIntegerField(null=False)
     maaliyet = models.PositiveIntegerField(null=False)
     satisFiyati = models.PositiveIntegerField(null=False)
     kdvOrani = models.PositiveIntegerField(default=0)
     barkodNo = models.PositiveIntegerField(default=0)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)  # Null olabilir
     currency_choices = [
         ('TRY', 'TRY'),
         ('USD', 'USD'),

@@ -4,7 +4,7 @@ from django.contrib.auth import update_session_auth_hash, logout
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .forms import ProductForm, CategoryForm, SalesPersonForm, QuickAddForm
+from .forms import ProductForm, CategoryForm, SalesPersonForm, QuickAddForm, UsernameChangeForm
 import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, UpdateView
 from .forms import ProductForm, CategoryForm, SalesPersonForm
-from .models import QuickAdd, SalesPerson, Sales, Payment
+from .models import QuickAdd, SalesPerson, Sales, Payment, Category
 from django.db.models import Case, When, F, Value, Sum, BooleanField, IntegerField
 from datetime import datetime, timedelta
 from django.utils.datetime_safe import date
@@ -24,8 +24,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 logger = logging.getLogger(__name__)
 
 
-# Create your views here.
-
 class QuickAddUpdate(UpdateView):
     model = QuickAdd
     form_class = QuickAddForm
@@ -33,13 +31,6 @@ class QuickAddUpdate(UpdateView):
     success_url = reverse_lazy('productmanagement')
 
 
-# def product_list(request):
-#     product_lists = QuickAdd.objects.all()
-#     paginator = Paginator(product_lists, 10)  # 10 ürünün olduğu bir sayfa
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-#     return render(request, 'store/productmanagement.html', {'page_obj': page_obj})
-#
 @login_required(login_url='sistem')
 @csrf_exempt
 def update_product(request, pk):
@@ -125,6 +116,7 @@ def productmanagement(request):
 @login_required(login_url='sistem')
 def category(request):
     forms = CategoryForm()
+    user_categories = Category.objects.filter(user=request.user)
     if request.method == 'POST':
         forms = CategoryForm(request.POST)
         if forms.is_valid():
@@ -133,7 +125,8 @@ def category(request):
             category.save()
             return redirect('category')
     context = {
-        'form': forms
+        'form': forms,
+        'user_categories': user_categories,
     }
     return render(request, 'store/category.html', context)
 
@@ -154,6 +147,59 @@ def change_password(request):
     return render(request, 'store/change_password.html', {'form': form})
 
 
+# # Kullanıcı adı değiştirme işlemi
+# @login_required(login_url='sistem')
+# def change_username(request):
+#     if request.method == 'POST':
+#         form = UserChangeForm(user=request.user, data=request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             # Oturum kimliği güncellenmeli, aksi halde kullanıcı oturumu kapanabilir
+#             update_session_auth_hash(request, user)
+#             logout(request)
+#             return redirect('username_change_done')  # Şifre değiştirme başarılı olduğunda yönlendirme yap
+#     else:
+#         form = UserChangeForm(user=request.user)
+#     return render(request, 'store/change_username.html', {'form': form})
+
+
+# @login_required(login_url='sistem')
+# def change_username(request):
+#     if request.method == 'POST':
+#         form = UserChangeForm(data=request.POST, instance=request.user)
+#         if form.is_valid():
+#             user = form.save()
+#             # Oturum kimliği güncellenmeli, aksi halde kullanıcı oturumu kapanabilir
+#             update_session_auth_hash(request, user)
+#             return redirect('password_change_done')  # Şifre değiştirme başarılı olduğunda yönlendirme yap
+#     else:
+#         form = UserChangeForm(instance=request.user)
+#     return render(request, 'store/change_username.html', {'form': form})
+
+
+@login_required(login_url='sistem')
+def change_username(request):
+    if request.method == 'POST':
+        form = UsernameChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            user = form.save()
+            # Oturum kimliği güncellenmeli, aksi halde kullanıcı oturumu kapanabilir
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Kullanıcı adı başarıyla değiştirildi.')
+            return redirect('dashboard')
+    else:
+        form = UsernameChangeForm(instance=request.user)
+    return render(request, 'store/change_username.html', {'form': form})
+
+
+
+
+
+
+
+
+
+
 @csrf_exempt
 @login_required(login_url='sistem')
 def update_stock(request, pk):
@@ -171,12 +217,6 @@ def update_stock(request, pk):
             return JsonResponse({'error': 'Product not found or you are not authorized'})
 
     return JsonResponse({'error': 'Invalid request'})
-
-
-# MEHMET KOD
-
-
-# MEHMET KOD
 
 
 @login_required(login_url='sistem')

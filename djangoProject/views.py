@@ -3,7 +3,8 @@ from django.db.models import Sum, F
 from django.shortcuts import render
 
 from store.forms import QuickAddForm
-from store.models import QuickAdd
+from store.models import QuickAdd, Category
+import logging
 
 
 # @login_required(login_url='sistem')
@@ -61,11 +62,15 @@ from store.models import QuickAdd
 #     return render(request, 'dashboard.html',
 #                   {'form': form, 'product_count': product_count, 'total_cost': total_cost, 'total_price': total_price})
 
+logger = logging.getLogger(__name__)
+
 
 @login_required(login_url='sistem')
 def dashboard(request):
-    form = QuickAddForm()
+    form = QuickAddForm(user=request.user)
+
     user_products = QuickAdd.objects.filter(user=request.user)
+
     product_count = user_products.count()
     total_cost = user_products.annotate(total=Sum(F('maaliyet') * F('stock'))) \
                      .aggregate(total_cost=Sum('total'))['total_cost'] or 0
@@ -74,7 +79,7 @@ def dashboard(request):
                       .aggregate(total_price=Sum('totalv1'))['total_price'] or 0
 
     if request.method == 'POST':
-        form = QuickAddForm(request.POST)
+        form = QuickAddForm(request.user, request.POST)
         if form.is_valid():
             product_name = form.cleaned_data['name']
             existing_product = QuickAdd.objects.filter(user=request.user, name=product_name).first()
@@ -82,13 +87,14 @@ def dashboard(request):
             if existing_product:  # Eğer ürün zaten varsa, güncelle
                 form = QuickAddForm(request.POST, instance=existing_product)
             else:  # Yoksa, yeni ürün oluştur
-                form = QuickAddForm(request.POST)
+                form = QuickAddForm(request.user, request.POST)
 
             product = form.save(commit=False)
             product.user = request.user
             product.save()
 
             user_products = QuickAdd.objects.filter(user=request.user)
+
             product_count = user_products.count()
             total_cost = user_products.annotate(total=Sum(F('maaliyet') * F('stock'))) \
                              .aggregate(total_cost=Sum('total'))['total_cost'] or 0
@@ -97,4 +103,5 @@ def dashboard(request):
                               .aggregate(total_price=Sum('totalv1'))['total_price'] or 0
 
     return render(request, 'dashboard.html',
-                  {'form': form, 'product_count': product_count, 'total_cost': total_cost, 'total_price': total_price})
+                  {'form': form, 'product_count': product_count, 'total_cost': total_cost,
+                   'total_price': total_price})
