@@ -1,0 +1,309 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Satış Yönetimi Yönetimi{% endblock title %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Satış</a></li>
+                            <li class="active">Satış Yönetimi Yönetimi</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<form method="get">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-12" >
+            <div class="card">
+                <div class="card-header" style="height: 50px;">
+                    <strong class="card-title">Ürün Arama</strong>
+                </div>
+                <div class="card-body">
+                    <div id="pay-invoice">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="product_name" class="control-label mb-1">Ürün Adı</label>
+                                <input type="text" id="product_name" name="product_name" class="form-control">
+                            </div>
+
+                            <div>
+                                <button type="submit" class="btn btn-lg btn-info btn-block">
+                                    <span>Ara</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Ürün Listesi -->
+<table border="1" class="table table-bordered table-light border-primary table-hover">
+    <!-- Tablo başlıkları -->
+    <thead>
+        <tr>
+            <th scope="col">Ürün Adı</th>
+            <th scope="col">Stok Miktarı</th>
+            <th scope="col">Maaliyet</th>
+            <th scope="col">Satış Fiyatı</th>
+            <th scope="col">Birimi</th>
+            <th scope="col">Barkod No</th>
+            <th scope="col">Adet Giriş</th>
+        </tr>
+    </thead>
+    <!-- Tablo verileri -->
+    <tbody>
+        {% if page_obj %}
+        {% for product in page_obj %}
+        <tr>
+            <!-- Diğer hücreler -->
+            <!-- Düzenlenebilir hücreler -->
+            <td>{{ product.name }}</td>
+            <td>{{ product.stock }}</td>
+            <td>{{ product.maaliyet }}</td>
+            <td>
+                <label>
+                    <input type="number" class="form-control form-control-sm satisFiyatiInput" value="{{ product.satisFiyati }}">
+                </label>
+            </td>
+            <td>{{ product.currency }}</td>
+            <td>{{ product.barkodNo }}</td>
+            <td>
+                <!-- Düzenleme butonu -->
+                <div class="form-row align-items-center">
+
+                    <form class="form-inline">
+                      <div class="form-group mx-sm-10 mb-15">
+                        <label for="inputPassword2" class="sr-only">Password</label>
+                          <label>
+                              <input type="number" class="form-control adetInput" value="1" min="1" max="{{ product.stock }}">
+                          </label>
+                      </div>
+                    </form>
+                    &nbsp;
+                    <button class="btn btn-primary edit-btn" style="padding: 8px 16px; font-size: 14px; border-radius: 20px;" data-pk="{{ product.pk }}">Sepete Ekle</button>
+
+
+
+                </div>
+
+
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">Arama sonucu bulunamadı.</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+
+<!-- Modal --->
+<div id="editModal" class="modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ürünü Düzenle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-group">
+                        <label for="nameInput">Ürün Adı:</label>
+                        <input type="text" class="form-control" id="nameInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockInput">Stok Miktarı:</label>
+                        <input type="text" class="form-control" id="stockInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="maaliyetInput">Maliyet:</label>
+                        <input type="text" class="form-control" id="maaliyetInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="satişFiyatiInput">Satış Fiyatı:</label>
+                        <input type="text" class="form-control" id="satişFiyatiInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="birimInput">Birimi:</label>
+                        <input type="text" class="form-control" id="birimInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="barkodNoInput">Barkod No:</label>
+                        <input type="text" class="form-control" id="barkodNoInput">
+                    </div>
+                    <!-- Diğer alanlar buraya eklenebilir -->
+                </form>
+            </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="closeModalBtn">Kapat</button>
+                        <form id="editForm" method="post">
+                             {% csrf_token %}
+                            <button type="submit" form="editForm" class="btn btn-primary">Kaydet</button>
+                        </form>
+                    </div>
+        </div>
+    </div>
+</div>
+
+{#<div id="editModal" class="modal">#}
+{#    <div class="modal-content">#}
+{#        <span class="close">&times;</span>#}
+{#        <form id="editForm">#}
+{#            <!-- Düzenlenebilir alanlar -->#}
+{#            <!-- Örnek olarak: -->#}
+{#            <input type="text" id="nameInput">#}
+{#            <input type="text" id="stockInput">#}
+{#            <input type="text" id="maaliyetInput">#}
+{#            <input type="text" id="satişFiyatiInput">#}
+{#            <input type="text" id="birimInput">#}
+{#            <input type="text" id="barkodNoInput">#}
+{#            <!-- Diğer alanlar -->#}
+{#            <button type="submit">Kaydet</button>#}
+{#        </form>#}
+{#    </div>#}
+{#</div>#}
+<!-- Sayfalama kontrolleri -->
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; İlk</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Önceki</a>
+        {% endif %}
+
+        <span class="current">
+            Sayfa {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Sonraki</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Son &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+<script>
+    document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const productPk = this.getAttribute('data-pk');
+        const name =  this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+        const stock = this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+        const maaliyet = this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+        const satisFiyati =  this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.textContent;
+        const birim = this.parentElement.previousElementSibling.previousElementSibling.textContent;
+        const barkodNo = this.parentElement.previousElementSibling.textContent;
+
+        openModal(productPk, name, stock, maaliyet, satisFiyati, birim, barkodNo);
+    });
+});
+
+// Modal açma fonksiyonu
+function openModal(productPk, name, stock, maaliyet, satisFiyati, birim, barkodNo) {
+    document.getElementById('nameInput').value = name;
+    document.getElementById('stockInput').value = stock;
+    document.getElementById('maaliyetInput').value = maaliyet;
+    document.getElementById('satişFiyatiInput').value = satisFiyati;
+    document.getElementById('birimInput').value = birim;
+    document.getElementById('barkodNoInput').value = barkodNo;
+
+    const modal = document.getElementById('editModal');
+    modal.style.display = 'block';
+
+    document.getElementById('editForm').onsubmit = function(event) {
+        event.preventDefault();
+        const updatedName = document.getElementById('nameInput').value;
+        const updatedStock = document.getElementById('stockInput').value;
+        const updatedMaaliyet = document.getElementById('maaliyetInput').value;
+        const updatedSatisFiyati = document.getElementById('satişFiyatiInput').value;
+        const updatedBirim = document.getElementById('birimInput').value;
+        const updatedBarkodNo = document.getElementById('barkodNoInput').value;
+
+        fetch(`/update_product/${productPk}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                name: updatedName,
+                stock: updatedStock,
+                maaliyet: updatedMaaliyet,
+                satisFiyati: updatedSatisFiyati,
+                birim: updatedBirim,
+                barkodNo: updatedBarkodNo
+                // Diğer alanlar...
+            })
+        })
+
+        .then(response => response.json())
+        .then(data => {
+            console.log('Güncelleme başarılı', data);
+            modal.style.display = 'none';
+            // Güncelleme başarılı olduğunda modalı kapat
+        })
+
+        .catch(error => {
+            console.error('Güncelleme hatası:', error);
+            // Hata durumunda modalı kapatma işlemi buraya eklenebilir
+        });location.reload();
+    };
+}
+
+    // Kapat düğmesine tıklama işlevselliği
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            closeModal();
+        });
+
+        // Modal dışına tıklama işlevselliği
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Modalı kapatan fonksiyon
+        function closeModal() {
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'none';
+        }
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const adet = parseInt(this.parentElement.querySelector('.adetInput').value);
+            const stokMiktari = parseInt(this.parentElement.parentElement.querySelector('.stokMiktari').textContent);
+            if (adet > stokMiktari) {
+                alert('Stok miktarından fazla ürün giremezsiniz.');
+                return; // Eğer stok miktarından fazla ise işlemi durdur
+            }
+            const satisFiyati = parseFloat(this.parentElement.parentElement.querySelector('.satisFiyati').textContent);
+            addToCart(productId, adet, satisFiyati);
+        });
+    });
+</script>
+{% endblock %}

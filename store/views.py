@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import DeleteView, UpdateView
 from .forms import ProductForm, CategoryForm, SalesPersonForm
-from .models import QuickAdd, SalesPerson, Sales, Payment, Category
+from .models import QuickAdd, SalesPerson, Sales, Payment, Category, Cart
 from django.db.models import Case, When, F, Value, Sum, BooleanField, IntegerField
 from datetime import datetime, timedelta
 from django.utils.datetime_safe import date
@@ -190,14 +190,6 @@ def change_username(request):
     else:
         form = UsernameChangeForm(instance=request.user)
     return render(request, 'store/change_username.html', {'form': form})
-
-
-
-
-
-
-
-
 
 
 @csrf_exempt
@@ -743,3 +735,83 @@ class ExportToExcelView(View):
 @login_required(login_url='login')
 def backup_data_view(request):
     return render(request, 'store/yedekleme.html')
+
+
+@login_required(login_url='login')
+def satis_alani(request):
+    return render(request, 'store/satis_alani.html')
+
+
+@login_required(login_url='sistem')
+def productmanagements(request):
+    # Kullanıcıya ait ürünleri sıralamak için
+    user_products = QuickAdd.objects.filter(user=request.user).order_by('-created_day')
+
+    # Eğer bir arama yapılıyorsa
+    query_name = request.GET.get('product_name')
+
+    if query_name:
+        user_products = user_products.filter(user=request.user, name__icontains=query_name)
+
+    paginator = Paginator(user_products, 10)  # Her sayfada 10 ürün gösterilecek
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # Eğer bir ürün eklemesi yapılıyorsa
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.user = request.user
+            product.save()
+            return redirect('product_list')  # Ürün eklendikten sonra tekrar listeye yönlendir
+    else:
+        form = ProductForm()
+
+    return render(request, 'store/satis_alani.html', {'products': user_products, 'form': form,
+                                                      'page_obj': page_obj})
+
+
+@login_required
+def add_to_cart(request, product_id):
+    cart_item = Cart.objects.filter(user=request.user, product=product_id).first()
+
+    if cart_item:
+        cart_item.quantity += 1
+        cart_item.save()
+        messages.success(request, "Item added to your cart.")
+    else:
+        Cart.objects.create(user=request.user, product=product_id)
+        messages.success(request, "Item added to your cart.")
+
+    return redirect("cart:cart_detail")
+
+
+@login_required
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(Cart, id=cart_item_id)
+
+    if cart_item.user == request.user:
+        cart_item.delete()
+        messages.success(request, "Item removed from your cart.")
+
+    return redirect("cart:cart_detail")
+
+
+@login_required
+def cart_detail(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    total_price = sum(item.quantity * item.product.price for item in cart_items)
+
+    context = {
+        "cart_items": cart_items,
+        "total_price": total_price,
+    }
+
+    return render(request, "cart/cart_detail.html", context)

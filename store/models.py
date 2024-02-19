@@ -3,6 +3,7 @@ from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.urls import reverse
 
 
 # Create your models here.
@@ -98,3 +99,15 @@ class Sales(models.Model):
 
     def total_profit_margin(self):
         return (self.product.satisFiyati - self.product.maaliyet) * self.quantity_sold
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.CharField(max_length=255)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product}"
+
+    def get_absolute_url(self):
+        return reverse("cart:cart_detail")

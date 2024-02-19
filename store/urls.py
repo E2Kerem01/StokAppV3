@@ -1,11 +1,11 @@
 
 
 from django.urls import path
-from .views import create_product, productmanagement, category, quick_sale, quick_sale_page, sales_history, \
+from .views import create_product, productmanagement, category, quick_sale, sales_history, \
     product_sales_history, salesperson_list, create_salesperson, salesperson_detail, SalesPersonDeleteView, \
     SalesPersonUpdateView, QuickAddUpdate, update_product, update_salesperson_, credit_sales_page, cast_page, \
     update_debt, salesperson_details, change_password, backup_data_view, ExportToExcelView, ExcelProcessorView, \
-    change_username
+    change_username, quick_sale_page, satis_alani, productmanagements
 
 urlpatterns = [
 
@@ -32,6 +32,8 @@ urlpatterns = [
     path('yedekleme/', backup_data_view, name='yedekleme'),
     path('export_to_excel/', ExportToExcelView.as_view(), name='export_to_excel'),
     path('process-excel/', ExcelProcessorView.as_view(), name='excel_processor'),
+
+    path('satis_alani/', productmanagements, name='satis_alani'),
 
 
 ]
